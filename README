@@ -31,6 +31,9 @@ Example (using Person as defined above):
   p = Person.new
   p.date_of_birth = "1 Jan 2006"
   p.save  # true
+  
+  p.date_of_birth = "30 Feb 2006"
+  p.save  # false, 30 feb is invalid for obvious reasons
    
   p.date_of_birth = "java is better than ruby"
   p.save  # false
