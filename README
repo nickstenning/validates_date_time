@@ -1,0 +1,150 @@
+= selenium_testing =
+
+This plugin extends the rails testing framework to allow you to write
+Selenium tests in the same way as unit and functional tests.
+
+
+Installation
+--
+
+Plugin:
+  script/plugin install http://svn.viney.net.nz/things/rails/plugins/selenium_testing
+
+Selenium:
+  rake install_selenium (or manually unpack Selenium into vendor/selenium)
+  
+Generate a test stub:
+  script/generate selenium_test person
+  # Add your tests into test/selenium/person_test.rb, see below for details
+  
+Start server with test environment:
+  # The plugin will only load in the test environment
+  script/server -e test
+  
+Open your browser and run the tests:
+  http://localhost:3000/selenium
+  
+
+Writing Tests
+--
+
+Tests are written in the same way as unit and functional tests. The method calls
+in the test (click, type, assert_visible etc... ) correspond to
+Selenium commands/assertions. See the Selenium documentation for a full
+listing of available commands/assertions. You can NOT use Test::Unit
+assertions (assert, assert_equal etc...), you must use Selenium assertions.
+
+  class PersonSeleniumTest < Test::Unit::TestCase
+    fixtures :people, :households
+    
+    def setup
+      open :controller => 'person', :action => 'view', :id => 1
+    end
+    
+    def test_add_new_person
+      click           'add_new_person_link'
+      assert_visible  'add_new_person'
+      type            'new_person_first_name', 'Pixel'
+      type            'new_person_last_name', 'the Cat'
+      select          'new_person_gender', 'Male'
+      click_and_wait  'submit_add_new_person'
+      assert_text     'person_name', 'Pixel the Cat'
+    end
+    
+    def test_household
+      people(:jonathan).householders.each do |householder|
+        assert_visible "householder_#{householder.id}"
+      end
+    end
+  end
+  
+
+Using Selenium IDE (Requires Firefox 1.5)
+--
+
+Selenium IDE (http://www.openqa.org/selenium-ide/) gives you a way of
+recording tests by simply using your application.
+Once you have installed the Firefox extension, select Tools -> Selenium IDE.
+Put Selenium IDE into Ruby mode by selecting Options -> Format -> Ruby.
+Selenium IDE will automatically be in record mode, so start clicking on
+things and using your application. You will see Selenium commands being generated.
+Once you are finished, flip to the Source tab and you will see a class definition
+with a single method. Just copy the method into your Selenium test class. Done!
+
+
+Test Suites
+--
+
+You can group tests into test suites so certain tests can easily be run together.
+To do this, add the file test/selenium/suites.rb. You can add entire TestCases into
+a suite, or select individual tests.
+
+suites.rb:
+
+  SeleniumTestSuite.new 'My test suite',
+    PersonSeleniumTest, # Run all the tests in this class
+    HouseholdSeleniumTest.new(:test_add_household) # Select a single test
+    
+  # Define as many test suites as you like
+
+Once you have defined one or more test suites, you will see a select box at the top
+of the upper left frame in the browser. Just select the test suite you want to run
+and you're good to go.
+
+
+Continuous Integration
+--
+
+To automatically run all your Selenium tests, use the test_selenium rake task.
+You can define which browsers are used in config/environment.rb. Default paths are used
+unless you specify others.
+
+  SeleniumConfig.set do |c|
+    c.browser :ie
+    c.browser :firefox, 'C:\Program Files\Mozilla Firefox\firefox.exe' # Path is optional
+  end
+
+  
+Misc
+--
+
+You can define the environment(s) that the plugin will load in using SeleniumConfig
+in config/environment.rb, eg:
+
+  SeleniumConfig.set do |c|
+    c.environments :test, :development
+  end
+
+
+User extensions
+--
+
+Selenium supports having a user-extensions.js file with custom commands and asertions.
+If you wish to use this feature, place your user-extensions.js file in test/selenium
+along with your test files.
+
+
+Subversion
+--
+
+http://svn.viney.net.nz/things/rails/plugins/selenium_testing
+
+
+Todo
+--
+
+ - Improve the continuous integration testing, probably using a driven
+   approach with the Selenium/Ruby driver. This will allow errors to be reported for tests,
+   as well as giving much more control over the entire procedure.
+ - More documentation/examples
+ - Tests!!
+
+
+Credits
+--
+Jonas Bengtsson http://andthennothing.net/archives/2006/02/05/selenium-on-rails
+
+
+Help
+--
+For more help and/or other questions, feel free to email me at jonathan@bluewire.net.nz
