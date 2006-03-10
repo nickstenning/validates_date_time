@@ -22,7 +22,7 @@ The date can be set initially as a string in any of the following formats:
  
   "2006-01-01"
   "1 Jan 06", or "1 Jan 2006"
-  "1/1/06", or "1/1/2006"     # Day / Month / Year
+  "1/1/06", "1/1/2006", "1\1\06", or "1\1\2006"  # Day / Month / Year
   
 They will all be parsed into a date object before the model is saved.
 If the date has been set to an invalid string, eg "Meow", an error is added to the model.
