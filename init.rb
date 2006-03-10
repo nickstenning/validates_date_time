@@ -1,4 +1,3 @@
-if SeleniumConfig[:environments].map { |e| e.to_s }.include?(RAILS_ENV)
-  $LOAD_PATH << File.expand_path(File.dirname(__FILE__) + '/lib/controllers')
-  require File.dirname(__FILE__) + '/routes.rb'
-end
+require File.dirname(__FILE__) + '/lib/validates_date'
+
+ActiveRecord::Base.send(:include, ActiveRecord::Validations::Date)
