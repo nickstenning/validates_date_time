@@ -1,29 +1,6 @@
 require File.dirname(__FILE__) + '/abstract_unit'
 
-class Person < ActiveRecord::Base
-  def self.columns()
-    @columns ||= []
-  end
-  
-  def self.column(name, sql_type = nil, default = nil, null = true)
-    columns << ActiveRecord::ConnectionAdapters::Column.new(name.to_s, default, sql_type.to_s, null)
-  end
-
-  column :name
-  column :date_of_birth
-  column :date_of_death
-  
-  validates_presence_of :name
-  validates_date :date_of_birth, :if => Proc.new { |p| p.date_of_birth? }
-  
-  # Want to be able to use update_attributes
-  def save
-    valid?
-  end
-end
-
-
-class PersonTest < Test::Unit::TestCase
+class DateTest < Test::Unit::TestCase
   def test_no_date_checking
     p = jonathan
     
@@ -41,7 +18,7 @@ class PersonTest < Test::Unit::TestCase
     assert p.update_attributes(:date_of_birth => '29/10/2005')
     assert_equal '2005-10-29', p.date_of_birth.to_s
     
-    assert p.update_attributes(:date_of_birth => '8\12\63')
+    assert p.update_attributes(:date_of_birth => ' 8\12\63')
     assert_equal '1963-12-08', p.date_of_birth.to_s
     
     assert p.update_attributes(:date_of_birth => '11\1\06')
@@ -58,7 +35,7 @@ class PersonTest < Test::Unit::TestCase
     assert p.update_attributes(:date_of_birth => '16 MaR 60')
     assert_equal '1960-03-16', p.date_of_birth.to_s
     
-    assert p.update_attributes(:date_of_birth => '22 dec 1985')
+    assert p.update_attributes(:date_of_birth => '22 dec 1985 ')
     assert_equal '1985-12-22', p.date_of_birth.to_s
     
     assert !p.update_attributes(:date_of_birth => '1 Jaw 00')
@@ -81,10 +58,23 @@ class PersonTest < Test::Unit::TestCase
     assert !p.update_attributes(:date_of_birth => '12\ f m')
   end
   
- private
-  def jonathan
-    p = Person.new(:name => 'Jonathan')
-    assert p.valid?
-    p
+  def test_validation
+    p = jonathan(:date_of_birth => '1 Jan 06')
+    
+    p.valid?
+    p.valid?
+  end
+  
+  def test_date_objects
+    p = jonathan
+    
+    assert p.update_attributes(:date_of_birth => Date.new(2006, 1, 1))
+    assert_equal '2006-01-01', p.date_of_birth.to_s
+    
+    assert p.update_attributes(:date_of_birth => '1 Jan 05')
+    assert_equal '2005-01-01', p.date_of_birth.to_s
+    
+    assert p.update_attributes(:date_of_birth => Date.new(1963, 4, 5))
+    assert_equal '1963-04-05', p.date_of_birth.to_s
   end
 end
