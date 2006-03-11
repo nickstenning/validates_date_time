@@ -3,6 +3,7 @@ require 'rubygems'
 require_gem 'activerecord'
 
 require File.dirname(__FILE__) + '/../lib/validates_date_time'
+require File.dirname(__FILE__) + '/person'
 
 ActiveRecord::Base.send(:include, ActiveRecord::Validations::DateTime)
 
