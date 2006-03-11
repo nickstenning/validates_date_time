@@ -1,0 +1,44 @@
+This plugin gives ActiveRecord the ability to do stricter date checking. Example:
+ 
+  class Person < ActiveRecord::Base
+    validates_date :date_of_birth
+  end
+  
+Install with:
+ 
+  script/plugin install http://svn.viney.net.nz/things/rails/plugins/validates_date 
+
+ 
+Check it's all working with:
+ 
+  rake test:plugins [or rake test_plugins if you are using Rails 1.0]
+
+
+Explanation
+--
+
+The Person class definition above will ensure that date_of_birth is a *valid* date.
+The date can be set initially as a string in any of the following formats:
+ 
+  "2006-01-01"
+  "1 Jan 06", or "1 Jan 2006"
+  "1/1/06", "1/1/2006", "1\1\06", or "1\1\2006"  # Day / Month / Year
+  
+They will all be parsed into a date object before the model is saved.
+If the date has been set to an invalid string, eg "Meow", an error is added to the model.
+Example (using Person as defined above):
+ 
+  p = Person.new
+  p.date_of_birth = "1 Jan 2006"
+  p.save  # true
+  
+  p.date_of_birth = "30 Feb 2006"
+  p.save  # false, 30 feb is invalid for obvious reasons
+   
+  p.date_of_birth = "java is better than ruby"
+  p.save  # false
+  
+In the final example, as I'm sure you are aware, the record failed to save not only
+because "java is better than ruby" is an invalid date, but more importantly, because the statement is blatantly false. ;) 
+ 
+Suggestions, comments, problems are all welcome. You'll find me at jonathan.viney@gmail.com
