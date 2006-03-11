@@ -1,12 +1,18 @@
-This plugin gives ActiveRecord the ability to do stricter date checking. Example:
+= validates_date_time =
+
+This plugin gives ActiveRecord the ability to do stricter date and time checking.
+I use this plugin to validate text fields in which the user can enter either a time or a date.
+
+Example:
  
   class Person < ActiveRecord::Base
     validates_date :date_of_birth
+    validates_time :time_of_birth
   end
   
 Install with:
  
-  script/plugin install http://svn.viney.net.nz/things/rails/plugins/validates_date 
+  script/plugin install http://svn.viney.net.nz/things/rails/plugins/validates_date_time 
 
  
 Check it's all working with:
@@ -17,19 +23,29 @@ Check it's all working with:
 Explanation
 --
 
-The Person class definition above will ensure that date_of_birth is a *valid* date.
-The date can be set initially as a string in any of the following formats:
+The Person class definition above will ensure that date_of_birth is a valid date and time_of_birth is a valid time.
+
+The date can be set initially as a string in of the following formats:
  
   "2006-01-01"
   "1 Jan 06", or "1 Jan 2006"
   "1/1/06", "1/1/2006", "1\1\06", or "1\1\2006"  # Day / Month / Year
   
-They will all be parsed into a date object before the model is saved.
-If the date has been set to an invalid string, eg "Meow", an error is added to the model.
+
+The time can be set initially as a string in the following formats:
+
+  "1pm"
+  "10:11"
+  "12:30PM"
+  "8am"
+  
+They will all be parsed into a date/time object before the model is saved.
+If the date/time has been set to an invalid string, eg "Meow", an error is added to the model.
 Example (using Person as defined above):
  
   p = Person.new
   p.date_of_birth = "1 Jan 2006"
+  p.time_of_birth = "5am"
   p.save  # true
   
   p.date_of_birth = "30 Feb 2006"
@@ -42,3 +58,11 @@ In the final example, as I'm sure you are aware, the record failed to save not o
 because "java is better than ruby" is an invalid date, but more importantly, because the statement is blatantly false. ;) 
  
 Suggestions, comments, problems are all welcome. You'll find me at jonathan.viney@gmail.com
+
+
+Todo
+--
+
+  - Should time validation accept seconds? I don't need support for that so that's why it's not there at the moment.
+  - Option to require a four digit year, no guessing from a 2 digit one.
+  - Date and time together (?), strings such as "1 Jan 06 5pm". A bit trickier...
