@@ -14,7 +14,6 @@ module ActiveRecord::Validations::DateTime
           validates_each(attr_names, configuration) do |record, attr_name, value|
             value_before_type_cast = record.send("\#{attr_name}_before_type_cast")
             
-            value_before_type_cast = value_before_type_cast.to_#{type} if value_before_type_cast.respond_to?(:to_#{type})
             unless value_before_type_cast.is_a?(#{type.capitalize})
               # Empty time matches 00:00:00, just ignore it
               unless value_before_type_cast.to_s =~ /00:00:00/
