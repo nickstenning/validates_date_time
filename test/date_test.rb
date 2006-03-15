@@ -8,6 +8,13 @@ class DateTest < Test::Unit::TestCase
     assert p.update_attributes(:date_of_death => 'All Blacks')
   end
   
+  def test_ignored
+    p = jonathan
+    
+    assert p.update_attributes(:date_of_birth => '2006-01-01')
+    assert p.update_attributes(:date_of_birth => '1980-10-28')
+  end
+  
   # Test 1/1/06 format
   def test_first_format
     p = jonathan
