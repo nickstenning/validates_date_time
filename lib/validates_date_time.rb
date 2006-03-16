@@ -73,6 +73,10 @@ module ActiveRecord::Validations::DateTime
         # 24 hour: 22:30, 03.10, 12 30
         when /^(\d{2})[\. :](\d{2})$/
           "#{$1}-#{$2}"
+	  
+	# HH:MM:SS
+        when /^(\d{2}):(\d{2}):(\d{2})$/
+          string
         
         else
           return
