@@ -8,6 +8,12 @@ class TimeTest < Test::Unit::TestCase
     assert p.update_attributes(:time_of_death => 'Silver Ferns')
   end
   
+  def test_with_seconds
+    p = jonathan
+    
+    assert p.update_attributes(:time_of_birth => '03:45:22')
+  end
+  
   def test_12_hour_with_minute
     p = jonathan
     
