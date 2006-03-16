@@ -31,6 +31,12 @@ class DateTest < Test::Unit::TestCase
     assert p.update_attributes(:date_of_birth => '11\1\06')
     assert_equal '2006-01-11', p.date_of_birth.to_s
     
+    assert p.update_attributes(:date_of_birth => '10.6.05')
+    assert_equal '2005-06-10', p.date_of_birth.to_s
+    
+    assert p.update_attributes(:date_of_birth => '20:9:07')
+    assert_equal '2007-09-20', p.date_of_birth.to_s
+    
     # Feb 30 should be invalid
     assert !p.update_attributes(:date_of_birth => '30/2/06')
   end
