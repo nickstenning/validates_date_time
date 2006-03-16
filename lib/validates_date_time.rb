@@ -37,9 +37,9 @@ module ActiveRecord::Validations::DateTime
       
       string = case string.strip
         # 22/1/06
-        when /^(\d{1,2})[\\\/](\d{1,2})[\\\/](\d{2}|\d{4})$/
+        when /^(\d{1,2})[\\\/\.:-](\d{1,2})[\\\/\.:-](\d{2}|\d{4})$/
           "#{ unambiguous_year $3 }-#{$2}-#{$1}"
-        
+          
         # 22 Feb 06 or 1 jun 2001
         when /^(\d{1,2}) (\w{3}) (\d{2}|\d{4})$/
           "#{ unambiguous_year $3 }-#{ Date::ABBR_MONTHNAMES.index($2.capitalize) }-#{$1}"
@@ -74,7 +74,7 @@ module ActiveRecord::Validations::DateTime
         when /^(\d{2})[\. :](\d{2})$/
           "#{$1}-#{$2}"
 	  
-	# HH:MM:SS
+        # HH:MM:SS
         when /^(\d{2}):(\d{2}):(\d{2})$/
           string
         
