@@ -56,6 +56,22 @@ Example (using Person as defined above):
   
 In the final example, as I'm sure you are aware, the record failed to save not only
 because "java is better than ruby" is an invalid date, but more importantly, because the statement is blatantly false. ;) 
+
+You can also restrict the given date to a particular range, eg:
+
+  class Person
+    validates_date :date_of_birth, :after => Proc.new { Date.new(1900, 1, 1) }, :before => Proc.new { 1.day.from_now.to_date }
+  end
+  
+  p = Person.new
+  p.date_of_birth = '1800-01-01'
+  p.save  # false
+  
+  p.date_of_birth = Date.new(2001, 1, 1)
+  p.save  # true
+  
+  p.date_of_birth = '2005-03-02'
+  p.save  # true
  
 Suggestions, comments, problems are all welcome. You'll find me at jonathan.viney@gmail.com
 

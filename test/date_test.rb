@@ -96,10 +96,10 @@ class DateTest < Test::Unit::TestCase
     
     assert p.update_attributes(:date_of_visit => '1950-01-01')
     
-    assert !p.update_attributes(:date_of_visit => '2007-01-01')
+    assert !p.update_attributes(:date_of_visit => (Date.today + 2).to_s)
     assert p.errors[:date_of_visit] =~ /before/
     
-    assert !p.update_attributes(:date_of_visit => Date.new(2010, 1, 1))
+    assert !p.update_attributes(:date_of_visit => Date.new(2030, 1, 1))
     assert p.errors[:date_of_visit] =~ /before/
     
     assert !p.update_attributes(:date_of_visit => '1899-01-01')
