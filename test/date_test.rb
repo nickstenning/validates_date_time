@@ -34,8 +34,8 @@ class DateTest < Test::Unit::TestCase
     assert p.update_attributes(:date_of_birth => '10.6.05')
     assert_equal '2005-06-10', p.date_of_birth.to_s
     
-    assert p.update_attributes(:date_of_birth => '20:9:07')
-    assert_equal '2007-09-20', p.date_of_birth.to_s
+    assert p.update_attributes(:date_of_birth => '20:9:06')
+    assert_equal '2006-09-20', p.date_of_birth.to_s
     
     # Feb 30 should be invalid
     assert !p.update_attributes(:date_of_birth => '30/2/06')
@@ -102,10 +102,17 @@ class DateTest < Test::Unit::TestCase
     assert !p.update_attributes(:date_of_visit => Date.new(2030, 1, 1))
     assert p.errors[:date_of_visit] =~ /before/
     
-    assert !p.update_attributes(:date_of_visit => '1899-01-01')
+    assert !p.update_attributes(:date_of_visit => '1908-01-01')
     assert p.errors[:date_of_visit] =~ /after/
     
     assert !p.update_attributes(:date_of_visit => Date.new(1800, 1, 1))
     assert p.errors[:date_of_visit] =~ /after/
+  end
+  
+  def test_dates_with_unknown_year
+    p = jonathan
+    
+    assert p.update_attributes(:date_of_birth => '9999-12-11')
+    assert p.update_attributes(:date_of_birth => Date.new(9999, 1, 1))
   end
 end
