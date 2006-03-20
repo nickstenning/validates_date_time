@@ -7,7 +7,9 @@ module ActiveRecord::Validations::DateTime
   module ClassMethods
     def validates_date(*attr_names)
       configuration = { :message        => "is an invalid date",
+                        :before         => Proc.new { 1.year.from_now.to_date },
                         :before_message => "must be before",
+                        :after          => Proc.new { Date.new(1900, 1, 1) },
                         :after_message  => "must be after",
                         :on => :save }
       configuration.update(attr_names.pop) if attr_names.last.is_a?(Hash)

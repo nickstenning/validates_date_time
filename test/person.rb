@@ -17,9 +17,9 @@ class Person < ActiveRecord::Base
   
   validates_presence_of :name
   
-  validates_date :date_of_birth, :if => Proc.new { |p| p.date_of_birth? }
+  validates_date :date_of_birth, :if => Proc.new { |p| p.date_of_birth? }, :before => nil
   validates_date :date_of_visit, :if => Proc.new { |p| p.date_of_visit? },
-                   :before => Proc.new { 1.day.from_now.to_date }, :after => Proc.new { Date.new(1900, 1, 1) }
+                   :before => Proc.new { 1.day.from_now.to_date }, :after => Proc.new { Date.new(1910, 1, 1) }
   validates_time :time_of_birth, :if => Proc.new { |p| p.time_of_birth? }
   
   # Want to be able to use update_attributes
