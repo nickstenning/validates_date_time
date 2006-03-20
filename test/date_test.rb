@@ -90,4 +90,22 @@ class DateTest < Test::Unit::TestCase
     assert p.update_attributes(:date_of_birth => Date.new(1963, 4, 5))
     assert_equal '1963-04-05', p.date_of_birth.to_s
   end
+  
+  def test_before_and_after
+    p = jonathan
+    
+    assert p.update_attributes(:date_of_visit => '1950-01-01')
+    
+    assert !p.update_attributes(:date_of_visit => '2007-01-01')
+    assert p.errors[:date_of_visit] =~ /before/
+    
+    assert !p.update_attributes(:date_of_visit => Date.new(2010, 1, 1))
+    assert p.errors[:date_of_visit] =~ /before/
+    
+    assert !p.update_attributes(:date_of_visit => '1899-01-01')
+    assert p.errors[:date_of_visit] =~ /after/
+    
+    assert !p.update_attributes(:date_of_visit => Date.new(1800, 1, 1))
+    assert p.errors[:date_of_visit] =~ /after/
+  end
 end
