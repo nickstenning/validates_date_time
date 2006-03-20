@@ -5,30 +5,49 @@ module ActiveRecord::Validations::DateTime
   end
   
   module ClassMethods
-    %w{ date time }.each do |type|
-      class_eval <<-END
-        def validates_#{type}(*attr_names)
-          configuration = { :message => "is an invalid #{type}", :on => :save }
-          configuration.update(attr_names.pop) if attr_names.last.is_a?(Hash)
-          
-          validates_each(attr_names, configuration) do |record, attr_name, value|
-            value_before_type_cast = record.send("\#{attr_name}_before_type_cast")
-            
-            unless value_before_type_cast.is_a?(#{type.capitalize})
-              # Empty time matches 00:00:00, just ignore it
-              unless value_before_type_cast.to_s =~ /00:00:00/
-                if result = parse_#{type}_string(value_before_type_cast.to_s)
-                  record.send("\#{attr_name}=", result)
-                else
-                  record.errors.add(attr_name, configuration[:message])
-                end
-              end
-            end
-          end
-        end
-      END
-    end
+    def validates_date(*attr_names)
+      configuration = { :message        => "is an invalid date",
+                        :before_message => "must be before",
+                        :after_message  => "must be after",
+                        :on => :save }
+      configuration.update(attr_names.pop) if attr_names.last.is_a?(Hash)
       
+      validates_each(attr_names, configuration) do |record, attr_name, value|
+        value_before_type_cast = record.send("#{attr_name}_before_type_cast")
+        
+        if result = parse_date_string(value_before_type_cast.to_s)
+          if configuration[:before]
+            before = configuration[:before].call
+            record.errors.add(attr_name, "#{configuration[:before_message]} #{before}") if result > before
+          end
+          
+          if configuration[:after]
+            after = configuration[:after].call
+            record.errors.add(attr_name, "#{configuration[:after_message]} #{after}") if result < after
+          end                
+            
+          record.send("#{attr_name}=", result) unless record.errors.on(attr_name)
+        else
+          record.errors.add(attr_name, configuration[:message])
+        end
+      end
+    end
+    
+    def validates_time(*attr_names)
+      configuration = { :message => "is an invalid time", :on => :save }
+      configuration.update(attr_names.pop) if attr_names.last.is_a?(Hash)
+      
+      validates_each(attr_names, configuration) do |record, attr_name, value|
+        value_before_type_cast = record.send("#{attr_name}_before_type_cast")
+        
+        if result = parse_time_string(value_before_type_cast.to_s)
+          record.send("#{attr_name}=", result)
+        else
+          record.errors.add(attr_name, configuration[:message])
+        end unless value_before_type_cast.is_a?(Time)
+      end        
+    end
+    
    private
     # Attempt to parse a string into a Date object.
     # Return nil if parsing fails
@@ -73,6 +92,10 @@ module ActiveRecord::Validations::DateTime
         # 24 hour: 22:30, 03.10, 12 30
         when /^(\d{2})[\. :](\d{2})$/
           "#{$1}-#{$2}"
+          
+        # Empty time is invalid
+        when /00:00:00/
+          return
 	  
         # HH:MM:SS
         when /^(\d{2}):(\d{2}):(\d{2})$/
