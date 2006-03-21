@@ -42,11 +42,11 @@ module ActiveRecord::Validations::DateTime
       validates_each(attr_names, configuration) do |record, attr_name, value|
         value_before_type_cast = record.send("#{attr_name}_before_type_cast")
         
-        if result = parse_time_string(value_before_type_cast.to_s)
+        unless value_before_type_cast.is_a?(Time)
+          result = parse_time_string(value_before_type_cast.to_s)
           record.send("#{attr_name}=", result)
-        else
-          record.errors.add(attr_name, configuration[:message])
-        end unless value_before_type_cast.is_a?(Time)
+          record.errors.add(attr_name, configuration[:message]) unless result
+        end 
       end        
     end
     
