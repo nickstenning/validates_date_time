@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + '/abstract_unit'
 
 class DateTest < Test::Unit::TestCase
+  fixtures :people
+  
   def test_no_date_checking
     assert p.update_attributes(:date_of_birth => nil, :date_of_death => nil)
     assert p.update_attributes(:date_of_visit => 'All Blacks')
