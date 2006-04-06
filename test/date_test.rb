@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/abstract_unit'
 class DateTest < Test::Unit::TestCase
   def test_no_date_checking
     assert p.update_attributes(:date_of_birth => nil, :date_of_death => nil)
-    assert p.update_attributes(:date_of_death => 'All Blacks')
+    assert p.update_attributes(:date_of_visit => 'All Blacks')
   end
   
   def test_ignored
@@ -78,23 +78,23 @@ class DateTest < Test::Unit::TestCase
   end
   
   def test_before_and_after
-    assert p.update_attributes(:date_of_visit => '1950-01-01')
+    assert p.update_attributes(:date_of_death => '1950-01-01')
     
-    assert !p.update_attributes(:date_of_visit => (Date.today + 2).to_s)
-    assert p.errors[:date_of_visit] =~ /before/
+    assert !p.update_attributes(:date_of_death => (Date.today + 2).to_s)
+    assert p.errors[:date_of_death] =~ /before/
     
-    assert !p.update_attributes(:date_of_visit => Date.new(2030, 1, 1))
-    assert p.errors[:date_of_visit] =~ /before/
+    assert !p.update_attributes(:date_of_death => Date.new(2030, 1, 1))
+    assert p.errors[:date_of_death] =~ /before/
     
-    assert !p.update_attributes(:date_of_visit => '1908-01-01')
-    assert p.errors[:date_of_visit] =~ /after/
+    assert p.update_attributes(:date_of_birth => '1950-01-01', :date_of_death => nil)
     
-    assert !p.update_attributes(:date_of_visit => Date.new(1800, 1, 1))
-    assert p.errors[:date_of_visit] =~ /after/
+    assert !p.update_attributes(:date_of_death => '1949-01-01')
+    assert p.errors[:date_of_death] =~ /after/
+    assert p.update_attributes(:date_of_death => Date.new(1951, 1, 1))
   end
   
   def test_before_and_after_with_custom_message
-    assert !p.update_attributes(:date_of_arrival => 2.years.from_now.to_date)
+    assert !p.update_attributes(:date_of_arrival => 2.years.from_now.to_date, :date_of_departure => 2.years.ago.to_date)
     assert p.errors[:date_of_arrival] =~ /avant/
     
     assert !p.update_attributes(:date_of_arrival => '1792-03-03')

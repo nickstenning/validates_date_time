@@ -19,13 +19,17 @@ module ActiveRecord::Validations::DateTime
         
         if result = parse_date_string(value_before_type_cast.to_s)
           if before = configuration[:before]
-            before = before.call if before.is_a?(Proc)
-            record.errors.add(attr_name, configuration[:before_message] % before) if result > before
+            before = before.call(record) if before.is_a?(Proc)
+            unless before.nil?
+              record.errors.add(attr_name, configuration[:before_message] % before) if result > before
+            end
           end
           
           if after = configuration[:after]
-            after = after.call if after.is_a?(Proc)
-            record.errors.add(attr_name, configuration[:after_message] % after) if result < after
+            after = after.call(record) if after.is_a?(Proc)
+            unless after.nil?
+              record.errors.add(attr_name, configuration[:after_message] % after) if result < after
+            end
           end                
             
           record.send("#{attr_name}=", result) unless record.errors.on(attr_name)
