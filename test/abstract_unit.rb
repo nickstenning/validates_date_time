@@ -1,12 +1,14 @@
 require 'test/unit'
 
 begin
-  require 'active_record/fixtures'
+  require File.dirname(__FILE__) + '/../../../../config/boot'
+  require 'active_record'
 rescue LoadError
   require 'rubygems'
   require_gem 'activerecord'
-  require 'active_record/fixtures'
 end
+
+require 'active_record/fixtures'
 
 require File.dirname(__FILE__) + '/../lib/validates_date_time'
 
