@@ -2,23 +2,17 @@ require File.dirname(__FILE__) + '/abstract_unit'
 
 class DateTest < Test::Unit::TestCase
   def test_no_date_checking
-    p = jonathan
-    
     assert p.update_attributes(:date_of_birth => nil, :date_of_death => nil)
     assert p.update_attributes(:date_of_death => 'All Blacks')
   end
   
   def test_ignored
-    p = jonathan
-    
     assert p.update_attributes(:date_of_birth => '2006-01-01')
     assert p.update_attributes(:date_of_birth => '1980-10-28')
   end
   
   # Test 1/1/06 format
   def test_first_format
-    p = jonathan
-    
     assert p.update_attributes(:date_of_birth => '1/1/01')
     assert_equal '2001-01-01', p.date_of_birth.to_s
     
@@ -43,8 +37,6 @@ class DateTest < Test::Unit::TestCase
   
   # Test 1 Jan 06 format
   def test_second_format
-    p = jonathan
-    
     assert p.update_attributes(:date_of_birth => '16 MaR 60')
     assert_equal '1960-03-16', p.date_of_birth.to_s
     
@@ -55,8 +47,6 @@ class DateTest < Test::Unit::TestCase
   end
   
   def test_invalid_formats
-    p = jonathan
-    
     assert !p.update_attributes(:date_of_birth => 'aksjhdaksjhd')
     assert !p.update_attributes(:date_of_birth => 'meow')
     assert !p.update_attributes(:date_of_birth => 'chocolate')
@@ -72,15 +62,11 @@ class DateTest < Test::Unit::TestCase
   end
   
   def test_validation
-    p = jonathan(:date_of_birth => '1 Jan 06')
-    
     p.valid?
     p.valid?
   end
   
   def test_date_objects
-    p = jonathan
-    
     assert p.update_attributes(:date_of_birth => Date.new(2006, 1, 1))
     assert_equal '2006-01-01', p.date_of_birth.to_s
     
@@ -92,8 +78,6 @@ class DateTest < Test::Unit::TestCase
   end
   
   def test_before_and_after
-    p = jonathan
-    
     assert p.update_attributes(:date_of_visit => '1950-01-01')
     
     assert !p.update_attributes(:date_of_visit => (Date.today + 2).to_s)
@@ -109,9 +93,15 @@ class DateTest < Test::Unit::TestCase
     assert p.errors[:date_of_visit] =~ /after/
   end
   
-  def test_dates_with_unknown_year
-    p = jonathan
+  def test_before_and_after_with_custom_message
+    assert !p.update_attributes(:date_of_arrival => 2.years.from_now.to_date)
+    assert p.errors[:date_of_arrival] =~ /avant/
     
+    assert !p.update_attributes(:date_of_arrival => '1792-03-03')
+    assert p.errors[:date_of_arrival] =~ /apres/
+  end
+  
+  def test_dates_with_unknown_year
     assert p.update_attributes(:date_of_birth => '9999-12-11')
     assert p.update_attributes(:date_of_birth => Date.new(9999, 1, 1))
   end

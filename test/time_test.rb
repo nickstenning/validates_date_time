@@ -2,21 +2,16 @@ require File.dirname(__FILE__) + '/abstract_unit'
 
 class TimeTest < Test::Unit::TestCase
   def test_no_time_checking
-    p = jonathan
-    
     assert p.update_attributes(:time_of_birth => nil, :time_of_death => nil)
     assert p.update_attributes(:time_of_death => 'Silver Ferns')
   end
   
   def test_with_seconds
-    p = jonathan
-    
     assert p.update_attributes(:time_of_birth => '03:45:22')
+    assert_match /03:45:22/, p.time_of_birth.to_s
   end
   
   def test_12_hour_with_minute
-    p = jonathan
-    
     assert p.update_attributes(:time_of_birth => '7.20pm')
     assert_match /19:20:00/, p.time_of_birth.to_s
     
@@ -29,8 +24,6 @@ class TimeTest < Test::Unit::TestCase
   end
   
   def test_12_hour_without_minute
-    p = jonathan
-    
     assert p.update_attributes(:time_of_birth => '11 am')
     assert_match /11:00:00/, p.time_of_birth.to_s
     
@@ -42,8 +35,6 @@ class TimeTest < Test::Unit::TestCase
   end
   
   def test_24_hour
-    p = jonathan
-    
     assert p.update_attributes(:time_of_birth => '22:00')
     assert_match /22:00:00/, p.time_of_birth.to_s
     
@@ -56,8 +47,6 @@ class TimeTest < Test::Unit::TestCase
   end
   
   def test_time_objects
-    p = jonathan
-    
     assert p.update_attributes(:time_of_birth => Time.gm(2006, 2, 2, 22, 30))
     assert_match /22:30:00/, p.time_of_birth.to_s
     
@@ -69,8 +58,6 @@ class TimeTest < Test::Unit::TestCase
   end
   
   def test_invalid_formats
-    p = jonathan
-    
     assert !p.update_attributes(:time_of_birth => '1 PPM')
     assert !p.update_attributes(:time_of_birth => 'lunchtime')
     assert !p.update_attributes(:time_of_birth => '8..30')
