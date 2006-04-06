@@ -8,9 +8,9 @@ module ActiveRecord::Validations::DateTime
     def validates_date(*attr_names)
       configuration = { :message        => "is an invalid date",
                         :before         => Proc.new { 1.year.from_now.to_date },
-                        :before_message => "must be before",
-                        :after          => Proc.new { Date.new(1900, 1, 1) },
-                        :after_message  => "must be after",
+                        :before_message => "must be before %s",
+                        :after          => Date.new(1900, 1, 1),
+                        :after_message  => "must be after %s",
                         :on => :save }
       configuration.update(attr_names.pop) if attr_names.last.is_a?(Hash)
       
@@ -18,14 +18,14 @@ module ActiveRecord::Validations::DateTime
         value_before_type_cast = record.send("#{attr_name}_before_type_cast")
         
         if result = parse_date_string(value_before_type_cast.to_s)
-          if configuration[:before]
-            before = configuration[:before].call
-            record.errors.add(attr_name, "#{configuration[:before_message]} #{before}") if result > before
+          if before = configuration[:before]
+            before = before.call if before.is_a?(Proc)
+            record.errors.add(attr_name, configuration[:before_message] % before) if result > before
           end
           
-          if configuration[:after]
-            after = configuration[:after].call
-            record.errors.add(attr_name, "#{configuration[:after_message]} #{after}") if result < after
+          if after = configuration[:after]
+            after = after.call if after.is_a?(Proc)
+            record.errors.add(attr_name, configuration[:after_message] % after) if result < after
           end                
             
           record.send("#{attr_name}=", result) unless record.errors.on(attr_name)
@@ -85,15 +85,15 @@ module ActiveRecord::Validations::DateTime
       string = case string.strip
         # 12 hour with minute: 7.30pm, 11:20am, 2 20PM
         when /^(\d{1,2})[\. :](\d{2})\s?(am|pm)$/i
-          "#{ $3.downcase == 'pm' ? $1.to_i + 12 : $1 }-#{$2}"
+          "#{ $3.downcase == 'pm' ? $1.to_i + 12 : $1 }:#{$2}"
         
         # 12 hour without minute: 2pm, 11Am, 7 pm
         when /^(\d{1,2})\s?(am|pm)$/i
-          "#{ $2.downcase == 'pm' ? $1.to_i + 12 : $1 }-0"
+          "#{ $2.downcase == 'pm' ? $1.to_i + 12 : $1 }:00"
         
         # 24 hour: 22:30, 03.10, 12 30
         when /^(\d{2})[\. :](\d{2})$/
-          "#{$1}-#{$2}"
+          "#{$1}:#{$2}"
           
         # Empty time is invalid
         when /00:00:00/
@@ -107,7 +107,7 @@ module ActiveRecord::Validations::DateTime
           return
       end
       
-      time_array = [2000, 1, 1, *string.split('-').collect { |s| s.to_i }]
+      time_array = [2000, 1, 1, *string.split(':').collect { |s| s.to_i }]
       Time.send(ActiveRecord::Base.default_timezone, *time_array) rescue nil
     end
     

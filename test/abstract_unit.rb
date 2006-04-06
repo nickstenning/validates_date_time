@@ -9,10 +9,10 @@ ActiveRecord::Base.send(:include, ActiveRecord::Validations::DateTime)
 require File.dirname(__FILE__) + '/person'
 
 class Test::Unit::TestCase
- private
-  def jonathan(attributes = {})
-    p = Person.new({ :name => 'Jonathan' }.merge(attributes))
+  attr_reader :p
+  
+  def setup
+    @p = Person.new(:name => 'Jonathan')
     assert p.valid?
-    p
   end
 end
