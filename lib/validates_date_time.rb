@@ -126,3 +126,5 @@ module ActiveRecord::Validations::DateTime
     end
   end
 end
+
+ActiveRecord::Base.send(:include, ActiveRecord::Validations::DateTime)

@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + '/abstract_unit'
 
 class TimeTest < Test::Unit::TestCase
+  fixtures :people
+  
   def test_no_time_checking
     assert p.update_attributes(:time_of_birth => nil, :time_of_death => nil)
     assert p.update_attributes(:time_of_death => 'Silver Ferns')
