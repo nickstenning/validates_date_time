@@ -38,7 +38,7 @@ class DateTest < Test::Unit::TestCase
   end
   
   # Test 1 Jan 06 format
-  def test_second_format
+  def test_second_format_abbr_month
     assert p.update_attributes(:date_of_birth => '16 MaR 60')
     assert_equal '1960-03-16', p.date_of_birth.to_s
     
@@ -46,6 +46,17 @@ class DateTest < Test::Unit::TestCase
     assert_equal '1985-12-22', p.date_of_birth.to_s
     
     assert !p.update_attributes(:date_of_birth => '1 Jaw 00')
+  end
+  
+  # Test 1 January 06 format
+  def test_second_format_full_month
+    assert p.update_attributes(:date_of_birth => '24 August 00')
+    assert_equal '2000-08-24', p.date_of_birth.to_s
+    
+    assert p.update_attributes(:date_of_birth => '25 December 1960')
+    assert_equal '1960-12-25', p.date_of_birth.to_s
+    
+    assert !p.update_attributes(:date_of_birth => '1 Febrarary 2003')
   end
   
   def test_invalid_formats

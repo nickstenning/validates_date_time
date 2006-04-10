@@ -66,8 +66,8 @@ module ActiveRecord::Validations::DateTime
           "#{ unambiguous_year $3 }-#{$2}-#{$1}"
           
         # 22 Feb 06 or 1 jun 2001
-        when /^(\d{1,2}) (\w{3}) (\d{2}|\d{4})$/
-          "#{ unambiguous_year $3 }-#{ Date::ABBR_MONTHNAMES.index($2.capitalize) }-#{$1}"
+        when /^(\d{1,2}) (\w{3,9}) (\d{2}|\d{4})$/
+          "#{ unambiguous_year $3 }-#{ Date::ABBR_MONTHNAMES.index($2.capitalize) || Date::MONTHNAMES.index($2.capitalize) }-#{$1}"
         
         # 2006-01-01, ignored
         when /^\d{4}-\d{2}-\d{2}$/
@@ -78,7 +78,7 @@ module ActiveRecord::Validations::DateTime
           return
       end
       
-      Date.new(*string.split('-').collect { |s| s.to_i }) rescue nil
+      Date.new(*string.split('-').collect(&:to_i)) rescue nil
     end
     
     # Attempt to parse a string into a Time object.
@@ -111,7 +111,7 @@ module ActiveRecord::Validations::DateTime
           return
       end
       
-      time_array = [2000, 1, 1, *string.split(':').collect { |s| s.to_i }]
+      time_array = [2000, 1, 1, *string.split(':').collect(&:to_i)]
       Time.send(ActiveRecord::Base.default_timezone, *time_array) rescue nil
     end
     
