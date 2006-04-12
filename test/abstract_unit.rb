@@ -40,13 +40,18 @@ class Test::Unit::TestCase #:nodoc:
     people(:jonathan)
   end
   
-  def assert_update_and_equal(attribute, value, expected)
-    assert p.update_attributes(attribute => value)
-    assert_equal expected, p.send(attribute).to_s
+  def assert_update_and_equal(expected, attributes = {})
+    assert p.update_attributes(attributes)
+    assert_equal expected, p.send(attributes.keys.first).to_s
   end
   
-  def assert_update_and_match(attribute, value, expected)
-    assert p.update_attributes(attribute => value)
-    assert_match expected, p.send(attribute).to_s
+  def assert_update_and_match(expected, attributes = {})
+    assert p.update_attributes(attributes)
+    assert_match expected, p.send(attributes.keys.first).to_s
+  end
+  
+  def assert_no_update_and_errors_match(expected, attributes = {})
+    assert !p.update_attributes(attributes)
+    assert_match expected, p.errors.full_messages.join
   end
 end

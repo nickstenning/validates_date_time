@@ -11,7 +11,7 @@ class DateTest < Test::Unit::TestCase
   def test_first_format
     { '1/1/01'  => '2001-01-01', '29/10/2005' => '2005-10-29', '8\12\63' => '1963-12-08',
       '11\1\06' => '2006-01-11', '10.6.05'    => '2005-06-10', '20:9:06' => '2006-09-20' }.each do |value, result|
-      assert_update_and_equal(:date_of_birth, value, result)
+      assert_update_and_equal result, :date_of_birth => value
     end
   end
   
@@ -19,7 +19,7 @@ class DateTest < Test::Unit::TestCase
   def test_second_format
     { '19 Mar 60'    => '1960-03-19', '22 dec 1985'      => '1985-12-22',
       '24 August 00' => '2000-08-24', '25 December 1960' => '1960-12-25'}.each do |value, result|
-      assert_update_and_equal(:date_of_birth, value, result)
+      assert_update_and_equal result, :date_of_birth => value
     end
   end
   
@@ -37,32 +37,24 @@ class DateTest < Test::Unit::TestCase
   end
   
   def test_date_objects
-    assert_update_and_equal(:date_of_birth, Date.new(2006, 1, 1), '2006-01-01')
-    assert_update_and_equal(:date_of_birth, Date.new(1963, 4, 5), '1963-04-05')
+    assert_update_and_equal '2006-01-01', :date_of_birth => Date.new(2006, 1, 1)
+    assert_update_and_equal '1963-04-05', :date_of_birth => Date.new(1963, 4, 5)
   end
   
   def test_before_and_after
     assert p.update_attributes(:date_of_death => '1950-01-01')
     
-    assert !p.update_attributes(:date_of_death => (Date.today + 2).to_s)
-    assert p.errors[:date_of_death] =~ /before/
-    
-    assert !p.update_attributes(:date_of_death => Date.new(2030, 1, 1))
-    assert p.errors[:date_of_death] =~ /before/
+    assert_no_update_and_errors_match /before/, :date_of_death => (Date.today + 2).to_s
+    assert_no_update_and_errors_match /before/, :date_of_death => Date.new(2030, 1, 1)
     
     assert p.update_attributes(:date_of_birth => '1950-01-01', :date_of_death => nil)
-    
-    assert !p.update_attributes(:date_of_death => '1949-01-01')
-    assert p.errors[:date_of_death] =~ /after/
+    assert_no_update_and_errors_match /after/, :date_of_death => '1949-01-01'
     assert p.update_attributes(:date_of_death => Date.new(1951, 1, 1))
   end
   
   def test_before_and_after_with_custom_message
-    assert !p.update_attributes(:date_of_arrival => 2.years.from_now.to_date, :date_of_departure => 2.years.ago.to_date)
-    assert p.errors[:date_of_arrival] =~ /avant/
-    
-    assert !p.update_attributes(:date_of_arrival => '1792-03-03')
-    assert p.errors[:date_of_arrival] =~ /apres/
+    assert_no_update_and_errors_match /avant/, :date_of_arrival => 2.years.from_now.to_date, :date_of_departure => 2.years.ago.to_date
+    assert_no_update_and_errors_match /apres/, :date_of_arrival => '1792-03-03'
   end
   
   def test_dates_with_unknown_year

@@ -54,12 +54,27 @@ module ActiveRecord::Validations::DateTime
       end        
     end
     
+    def validates_datetime(*attr_names)
+      configuration = { :message => "is an invalid datetime", :on => :save }
+      configuration.update(attr_names.pop) if attr_names.last.is_a?(Hash)
+      
+      validates_each(attr_names, configuration) do |record, attr_name, value|
+        value_before_type_cast = record.send("#{attr_name}_before_type_cast")
+        
+        unless value_before_type_cast.is_a?(Time)
+          result = parse_datetime_string(value_before_type_cast.to_s)
+          record.send("#{attr_name}=", result)
+          record.errors.add(attr_name, configuration[:message]) unless result
+        end
+      end
+    end
+    
    private
     # Attempt to parse a string into a Date object.
     # Return nil if parsing fails
     def parse_date_string(string)
       return if string.nil?
-      
+      puts "Parsing date: #{string}"
       string = case string.strip
         # 22/1/06
         when /^(\d{1,2})[\\\/\.:-](\d{1,2})[\\\/\.:-](\d{2}|\d{4})$/
@@ -113,6 +128,18 @@ module ActiveRecord::Validations::DateTime
       
       time_array = [2000, 1, 1, *string.split(':').collect(&:to_i)]
       Time.send(ActiveRecord::Base.default_timezone, *time_array) rescue nil
+    end
+    
+    # Attempt to parse a string into a date and time
+    # Return nil if parsing fails
+    def parse_datetime_string(string)
+      return if string.nil?
+      
+      # Attempt to parse a date from the start of the string, splitting on spaces
+      index = nil
+      (split = string.split).each_with_index do |portion, index|
+        break if date_result = parse_date_string (split[0..index].join(' '))
+      end
     end
     
     # Extract a 4-digit year from a 2-digit year.
