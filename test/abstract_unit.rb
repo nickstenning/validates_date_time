@@ -39,4 +39,14 @@ class Test::Unit::TestCase #:nodoc:
   def p
     people(:jonathan)
   end
+  
+  def assert_update_and_equal(attribute, value, expected)
+    assert p.update_attributes(attribute => value)
+    assert_equal expected, p.send(attribute).to_s
+  end
+  
+  def assert_update_and_match(attribute, value, expected)
+    assert p.update_attributes(attribute => value)
+    assert_match expected, p.send(attribute).to_s
+  end
 end
