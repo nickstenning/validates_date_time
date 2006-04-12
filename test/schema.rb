@@ -2,7 +2,6 @@ ActiveRecord::Schema.define :version => 0 do
   create_table :people, :force => true do |t|
     t.column :date_of_birth,     :date
     t.column :date_of_death,     :date
-    t.column :date_of_visit,     :date
     
     t.column :date_of_arrival,   :date
     t.column :date_of_departure, :date
