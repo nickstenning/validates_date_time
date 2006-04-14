@@ -50,6 +50,11 @@ class Test::Unit::TestCase #:nodoc:
     assert_match expected, p.send(attributes.keys.first).to_s
   end
   
+  def assert_no_update_and_errors(attributes = {})
+    assert !p.update_attributes(attributes)
+    assert p.errors.on(attributes.keys.first)
+  end
+  
   def assert_no_update_and_errors_match(expected, attributes = {})
     assert !p.update_attributes(attributes)
     assert_match expected, p.errors.full_messages.join

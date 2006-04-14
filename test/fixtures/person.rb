@@ -6,5 +6,5 @@ class Person < ActiveRecord::Base
   
   validates_time :time_of_birth, :if => Proc.new { |p| p.time_of_birth? }
   
-  validates_datetime :date_and_time, :if => Proc.new { |p| p.date_and_time? }
+  validates_datetime :date_and_time_of_birth, :if => Proc.new { |p| p.date_and_time_of_birth? }
 end
