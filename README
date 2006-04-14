@@ -6,8 +6,9 @@ I use this plugin to validate text fields in which the user can enter either a t
 Example:
  
   class Person < ActiveRecord::Base
-    validates_date :date_of_birth
-    validates_time :time_of_birth
+    validates_date     :date_of_birth
+    validates_time     :time_of_birth
+    validates_datetime :date_and_time_of_birth
   end
   
 Install with:
@@ -92,4 +93,3 @@ Todo
 
   - Should time validation accept seconds? I don't need support for that so that's why it's not there at the moment.
   - Option to require a four digit year, no guessing from a 2 digit one.
-  - Date and time together (?), strings such as "1 Jan 06 5pm". A bit trickier...

@@ -74,7 +74,7 @@ module ActiveRecord::Validations::DateTime
     # Return nil if parsing fails
     def parse_date_string(string)
       return if string.nil?
-      puts "Parsing date: #{string}"
+      
       string = case string.strip
         # 22/1/06
         when /^(\d{1,2})[\\\/\.:-](\d{1,2})[\\\/\.:-](\d{2}|\d{4})$/
@@ -135,11 +135,17 @@ module ActiveRecord::Validations::DateTime
     def parse_datetime_string(string)
       return if string.nil?
       
-      # Attempt to parse a date from the start of the string, splitting on spaces
-      index = nil
-      (split = string.split).each_with_index do |portion, index|
-        break if date_result = parse_date_string (split[0..index].join(' '))
+      # The basic approach is to attempt to parse a date from the front of the string, splitting on spaces.
+      # Once a date has been parsed, a time is extracted from the rest of the string.
+      split_index = 0
+      until false do
+        split_index = string.index(' ', split_index == 0 ? 0 : split_index + 1)
+        break if !split_index or date = parse_date_string(string[0..split_index])
       end
+      
+      time = parse_time_string(string[split_index + 1..string.size]) if split_index
+      
+      Time.send(ActiveRecord::Base.default_timezone, date.year, date.month, date.day, time.hour, time.min, time.sec) rescue nil
     end
     
     # Extract a 4-digit year from a 2-digit year.
