@@ -75,25 +75,20 @@ module ActiveRecord::Validations::DateTime
     def parse_date_string(string)
       return if string.nil?
       
-      string = case string.strip
+      year, month, day = case string.strip
         # 22/1/06
-        when /^(\d{1,2})[\\\/\.:-](\d{1,2})[\\\/\.:-](\d{2}|\d{4})$/
-          "#{ unambiguous_year $3 }-#{$2}-#{$1}"
-          
+        when /^(\d{1,2})[\\\/\.:-](\d{1,2})[\\\/\.:-](\d{2}|\d{4})$/ then [$3, $2, $1]
         # 22 Feb 06 or 1 jun 2001
-        when /^(\d{1,2}) (\w{3,9}) (\d{2}|\d{4})$/
-          "#{ unambiguous_year $3 }-#{ Date::ABBR_MONTHNAMES.index($2.capitalize) || Date::MONTHNAMES.index($2.capitalize) }-#{$1}"
-        
-        # 2006-01-01, ignored
-        when /^\d{4}-\d{2}-\d{2}$/
-          string
-        
+        when /^(\d{1,2}) (\w{3,9}) (\d{2}|\d{4})$/ then [$3, $2, $1]
+        # July 1 2005
+        when /^(\w{3,9} (\d{1,2}) (\d{2}|\d{4}))$/ then [$3, $1, $2]
+        # 2006-01-01
+        when /^(\d{4})-(\d{2})-(\d{2})$/ then [$1, $2, $3]
         # Not a valid date string
-        else
-          return
+        else return
       end
       
-      Date.new(*string.split('-').collect(&:to_i)) rescue nil
+      Date.new(unambiguous_year(year), month_index(month), day.to_i) rescue nil
     end
     
     # Attempt to parse a string into a Time object.
@@ -101,33 +96,21 @@ module ActiveRecord::Validations::DateTime
     def parse_time_string(string)
       return if string.nil?
       
-      string = case string.strip
+      hour, minute, second = case string.strip
         # 12 hour with minute: 7.30pm, 11:20am, 2 20PM
         when /^(\d{1,2})[\. :](\d{2})\s?(am|pm)$/i
-          "#{ $3.downcase == 'pm' ? $1.to_i + 12 : $1 }:#{$2}"
-        
+          [full_hour($1, $3), $2]
         # 12 hour without minute: 2pm, 11Am, 7 pm
         when /^(\d{1,2})\s?(am|pm)$/i
-          "#{ $2.downcase == 'pm' ? $1.to_i + 12 : $1 }:00"
-        
+          [full_hour($1, $2)]
         # 24 hour: 22:30, 03.10, 12 30
-        when /^(\d{2})[\. :](\d{2})$/
-          "#{$1}:#{$2}"
-          
-        # Empty time is invalid
-        when /00:00:00/
-          return
-	  
-        # HH:MM:SS
-        when /^(\d{2}):(\d{2}):(\d{2})$/
-          string
-        
-        else
-          return
+        when /^(\d{2})[\. :](\d{2})([\. :](\d{2}))?/
+          [$1, $2, $4]
+        # Not a valid time string
+        else return
       end
       
-      time_array = [2000, 1, 1, *string.split(':').collect(&:to_i)]
-      Time.send(ActiveRecord::Base.default_timezone, *time_array) rescue nil
+      Time.send(ActiveRecord::Base.default_timezone, 2000, 1, 1, hour.to_i, minute.to_i, second.to_i) rescue nil
     end
     
     # Attempt to parse a string into a date and time
@@ -148,6 +131,15 @@ module ActiveRecord::Validations::DateTime
       Time.send(ActiveRecord::Base.default_timezone, date.year, date.month, date.day, time.hour, time.min, time.sec) rescue nil
     end
     
+    def full_hour(hour, meridian)
+      meridian.strip.downcase == 'am' ? hour.to_i : hour.to_i + 12
+    end
+    
+    def month_index(month)
+      return month.to_i unless month.to_i.zero?
+      Date::ABBR_MONTHNAMES.index(month.capitalize) || Date::MONTHNAMES.index(month.capitalize)
+    end
+    
     # Extract a 4-digit year from a 2-digit year.
     # If the number is less than 20, assume year 20#{number}
     # otherwise use 19#{number}. Ignore if already 4 digits.
@@ -155,7 +147,8 @@ module ActiveRecord::Validations::DateTime
     # Eg:
     #    10 => 2010, 60 => 1960, 00 => 2000, 1963 => 1963
     def unambiguous_year(year)
-      year.length == 2 ? (year.to_i < 20 ? "20#{year}" : "19#{year}") : year
+      year = "#{year.to_i < 20 ? '20' : '19'}#{year}" if year.length == 2
+      year.to_i
     end
   end
 end
