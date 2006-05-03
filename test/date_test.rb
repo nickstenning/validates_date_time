@@ -27,7 +27,7 @@ class DateTest < Test::Unit::TestCase
     ['aksjhdaksjhd', 'meow', 'chocolate',
      '221 jan 05', '21 JAN 001', '1 Jaw 00', '1 Febrarary 2003', '30/2/06',
      '1/2/3/4', '11/22/33', '10/10/990', '189 /1 /9', '12\ f m'].each do |value|
-      assert !p.update_attributes(:date_of_birth => value)
+      assert !p.update_attributes(:date_of_birth => value), "#{value} should not be valid"
     end
   end
   
@@ -60,5 +60,14 @@ class DateTest < Test::Unit::TestCase
   def test_dates_with_unknown_year
     assert p.update_attributes(:date_of_birth => '9999-12-11')
     assert p.update_attributes(:date_of_birth => Date.new(9999, 1, 1))
+  end
+  
+  def test_us_date_format
+    with_us_date_format do
+      {'1/31/06'  => '2006-01-31', '2\28\01'  => '2001-02-28',
+       '10/10/80' => '1980-10-10', '7\4\1960' => '1960-07-04'}.each do |value, result|
+        assert_update_and_equal result, :date_of_birth => value
+      end
+    end
   end
 end
