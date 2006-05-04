@@ -10,6 +10,8 @@ module ActiveRecord::Validations::DateTime
   end
   class DateTimeParseError < StandardError #:nodoc:
   end
+  class RestrictionError < StandardError #:nodoc:
+  end
   
   mattr_accessor :us_date_format
   us_date_format = false
@@ -25,7 +27,7 @@ module ActiveRecord::Validations::DateTime
                 when Symbol, Proc then item
                 when #{method.to_s.camelize} then item
                 when String then parse_#{method}(item)
-                else raise "\#{item.class}:\#{item} invalid. Use either a Proc, String, Symbol or #{method.to_s.camelize} object."
+                else raise RestrictionError, "\#{item.class}:\#{item} invalid. Use either a Proc, String, Symbol or #{method.to_s.camelize} object."
               end
             end
           end
@@ -35,11 +37,24 @@ module ActiveRecord::Validations::DateTime
       class_eval <<-END
         def #{method}_meets_relative_restrictions(value, record, restrictions, method)
           restrictions.select do |restriction|
-            case restriction
-              when Symbol then value.send(method, record.send(restriction)) rescue false
-              when Proc   then value.send(method, restriction.call(record)) rescue false
-              when #{method.to_s.camelize} then value.send(method, restriction)
-              else raise
+            begin
+              case restriction
+                when Symbol
+                  value.send(method, record.send(restriction)) rescue false
+                  
+                when Proc
+                  result = restriction.call(record)
+                  result = parse_#{method}(result) unless result.is_a?(#{method.to_s.camelize})
+                  value.send(method, result)
+                  
+                when #{method.to_s.camelize}
+                  value.send(method, restriction)
+                  
+                else
+                  raise
+              end
+            rescue
+              raise RestrictionError, "Invalid restriction \#{restriction.class}:\#{restriction}"
             end
           end.first
         end
@@ -108,6 +123,7 @@ module ActiveRecord::Validations::DateTime
     def parse_date(value)
       raise if value.blank?
       return value if value.is_a?(Date)
+      return value.to_date if value.is_a?(Time)
       raise unless value.is_a?(String)
       
       year, month, day = case value.strip
@@ -133,6 +149,7 @@ module ActiveRecord::Validations::DateTime
     def parse_time(value)
       raise if value.blank?
       return value if value.is_a?(Time)
+      return value.to_time if value.is_a?(Date)
       raise unless value.is_a?(String)
       
       hour, minute, second = case value.strip

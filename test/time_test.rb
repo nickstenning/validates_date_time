@@ -4,11 +4,13 @@ class TimeTest < Test::Unit::TestCase
   fixtures :people
   
   def test_no_time_checking
-    assert p.update_attributes(:time_of_birth => nil, :time_of_death => nil, :time_of_death => 'Silver Ferns')
+    assert p.update_attributes(:time_of_birth => nil, :time_of_death => nil, :time_of_death => nil)
   end
   
   def test_with_seconds
-    assert_update_and_match /03:45:22/, :time_of_birth => '03:45:22'
+    { '03:45:22' => /03:45:22/, '09:10:27' => /09:10:27/ }.each do |value, result|
+      assert_update_and_match result, :time_of_birth => value
+    end
   end
   
   def test_12_hour_with_minute
@@ -39,5 +41,17 @@ class TimeTest < Test::Unit::TestCase
     ['1 PPM', 'lunchtime', '8..30', 'chocolate', '29am'].each do |value|
       assert !p.update_attributes(:time_of_birth => value)
     end
+  end
+  
+  def test_after
+    assert_no_update_and_errors_match /must be after/, :time_of_death => '6pm'
+    
+    assert p.update_attributes(:time_of_death => '8pm')
+    assert p.update_attributes(:time_of_death => nil, :time_of_birth => Time.gm(2001, 1, 1, 9))
+    
+    assert_no_update_and_errors_match /must be after/, :time_of_death => '7am'
+  end
+  
+  def test_before
   end
 end
