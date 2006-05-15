@@ -97,10 +97,12 @@ module ActiveRecord::Validations::DateTime
           before_restrictions, after_restrictions = relative_#{validator}_restrictions(configuration)
           
           validates_each(attr_names, configuration) do |record, attr_name, value|
-            value_before_type_cast = record.send("\#{attr_name}_before_type_cast")
+            value_to_parse = record.send("\#{attr_name}_before_type_cast")
+            
+            value_to_parse = parse_date_time(value_to_parse) rescue value_to_parse
             
             begin
-              result = parse_#{validator}(value_before_type_cast)
+              result = parse_#{validator}(value_to_parse)
               
               if failed_restriction = #{validator}_before(result, record, before_restrictions)
                 record.errors.add(attr_name, configuration[:before_message] % failed_restriction)
@@ -110,8 +112,8 @@ module ActiveRecord::Validations::DateTime
                 record.errors.add(attr_name, configuration[:after_message] % failed_restriction)
               end
               
-               record.send("\#{attr_name}=", result) unless record.errors.on(attr_name)
-             rescue #{validator.to_s.camelize}ParseError
+              record.send("\#{attr_name}=", result) unless record.errors.on(attr_name)
+            rescue #{validator.to_s.camelize}ParseError
               record.errors.add(attr_name, configuration[:message])
             end
           end
@@ -174,7 +176,10 @@ module ActiveRecord::Validations::DateTime
     def parse_date_time(value)
       raise if value.blank?
       return value if value.is_a?(Time)
+      return value.to_time if value.is_a?(Date)
       raise unless value.is_a?(String)
+      
+      value.strip!
       
       # The basic approach is to attempt to parse a date from the front of the string, splitting on spaces.
       # Once a date has been parsed, a time is extracted from the rest of the string.
