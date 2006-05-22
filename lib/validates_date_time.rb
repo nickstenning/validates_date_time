@@ -36,7 +36,7 @@ module ActiveRecord::Validations::DateTime
       
       class_eval <<-END
         def #{method}_meets_relative_restrictions(value, record, restrictions, method)
-          restrictions.select do |restriction|
+          restrictions = restrictions.select do |restriction|
             begin
               case restriction
                 when Symbol
@@ -56,7 +56,9 @@ module ActiveRecord::Validations::DateTime
             rescue
               raise RestrictionError, "Invalid restriction \#{restriction.class}:\#{restriction}"
             end
-          end.first
+          end
+          
+          restrictions.collect { |r| r.respond_to?(:call) ? r.call : r }.first
         end
       END
     end
