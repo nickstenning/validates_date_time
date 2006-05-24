@@ -58,7 +58,7 @@ module ActiveRecord::Validations::DateTime
             end
           end
           
-          restrictions.collect { |r| r.respond_to?(:call) ? r.call : r }.first
+          restrictions.collect { |r| r.respond_to?(:call) ? r.call(record) : r }.first
         end
       END
     end
