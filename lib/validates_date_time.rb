@@ -199,7 +199,12 @@ module ActiveRecord::Validations::DateTime
     end
     
     def full_hour(hour, meridian)
-      meridian.strip.downcase == 'am' ? hour.to_i : hour.to_i + 12
+      hour = hour.to_i
+      if meridian.strip.downcase == 'am'
+        hour == 12 ? 0 : hour
+      else
+        hour == 12 ? hour : hour + 12
+      end
     end
     
     def month_index(month)
