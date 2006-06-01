@@ -20,7 +20,7 @@ class TimeTest < Test::Unit::TestCase
   end
   
   def test_12_hour_without_minute
-    { '11 am' => /11:00:00/, '7PM ' => /19:00:00/, ' 1Am' => /01:00:00/ }.each do |value, result|
+    { '11 am' => /11:00:00/, '7PM ' => /19:00:00/, ' 1Am' => /01:00:00/, '12pm' => /12:00:00/, '12.00pm' => /12:00:00/, '12am' => /00:00:00/ }.each do |value, result|
       assert_update_and_match result, :time_of_birth => value
     end
   end
