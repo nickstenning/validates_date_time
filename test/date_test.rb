@@ -23,6 +23,19 @@ class DateTest < Test::Unit::TestCase
     end
   end
   
+  # Test February 4 2006 formats
+  def test_third_format
+    { 'february 4 06' => '2006-02-04', 'DECember 25 1850' => '1850-12-25' }.each do |value, result|
+      assert_update_and_equal result, :date_of_birth => value
+    end
+  end
+  
+  def test_iso_format
+    { '2006-01-01' => '2006-01-01', '1900-04-22' => '1900-04-22' }.each do |value, result|
+      assert_update_and_equal result, :date_of_birth => value
+    end
+  end
+  
   def test_invalid_formats
     ['aksjhdaksjhd', 'meow', 'chocolate',
      '221 jan 05', '21 JAN 001', '1 Jaw 00', '1 Febrarary 2003', '30/2/06',
@@ -64,8 +77,9 @@ class DateTest < Test::Unit::TestCase
   
   def test_us_date_format
     with_us_date_format do
-      {'1/31/06'  => '2006-01-31', '2\28\01'  => '2001-02-28',
-       '10/10/80' => '1980-10-10', '7\4\1960' => '1960-07-04'}.each do |value, result|
+      {'1/31/06'  => '2006-01-31', '28 Feb 01'  => '2001-02-28',
+       '10/10/80' => '1980-10-10', 'July 4 1960' => '1960-07-04',
+       '2006-03-20' => '2006-03-20'}.each do |value, result|
         assert_update_and_equal result, :date_of_birth => value
       end
     end

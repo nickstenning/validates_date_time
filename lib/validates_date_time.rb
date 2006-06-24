@@ -132,18 +132,20 @@ module ActiveRecord::Validations::DateTime
       
       year, month, day = case value.strip
         # 22/1/06 or 22\1\06
-        when /^(\d{1,2})[\\\/\.:-](\d{1,2})[\\\/\.:-](\d{2}|\d{4})$/ then [$3, $2, $1]
+        when /^(\d{1,2})[\\\/\.:-](\d{1,2})[\\\/\.:-](\d{2}|\d{4})$/
+          ActiveRecord::Validations::DateTime.us_date_format ? [$3, $1, $2] : [$3, $2, $1]
         # 22 Feb 06 or 1 jun 2001
-        when /^(\d{1,2}) (\w{3,9}) (\d{2}|\d{4})$/ then [$3, $2, $1]
+        when /^(\d{1,2}) (\w{3,9}) (\d{2}|\d{4})$/
+          [$3, $2, $1]
         # July 1 2005
-        when /^(\w{3,9} (\d{1,2}) (\d{2}|\d{4}))$/ then [$3, $1, $2]
+        when /^(\w{3,9}) (\d{1,2}) (\d{2}|\d{4})$/
+          [$3, $1, $2]
         # 2006-01-01
-        when /^(\d{4})-(\d{2})-(\d{2})$/ then [$1, $2, $3]
+        when /^(\d{4})-(\d{2})-(\d{2})$/
+          [$1, $2, $3]
         # Not a valid date string
         else raise
       end
-      
-      month, day = day, month if ActiveRecord::Validations::DateTime.us_date_format
       
       Date.new(unambiguous_year(year), month_index(month), day.to_i)
     rescue
