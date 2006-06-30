@@ -10,5 +10,7 @@ ActiveRecord::Schema.define :version => 0 do
     t.column :time_of_death,          :time
     
     t.column :date_and_time_of_birth, :datetime
+    
+    t.column :required_date,          :date
   end
 end

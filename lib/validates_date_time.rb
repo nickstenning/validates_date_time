@@ -94,6 +94,9 @@ module ActiveRecord::Validations::DateTime
                             :on => :save }
           configuration.update(attr_names.pop) if attr_names.last.is_a?(Hash)
           
+          # We must remove this from the configuration that is passed to validates_each because
+          # we want to have our own definition of nil that uses the before_type_cast value
+          allow_nil = configuration.delete(:allow_nil)
           configuration.assert_valid_keys :message, :before_message, :after_message, :before, :after, :if, :on
           
           before_restrictions, after_restrictions = relative_#{validator}_restrictions(configuration)
@@ -101,22 +104,24 @@ module ActiveRecord::Validations::DateTime
           validates_each(attr_names, configuration) do |record, attr_name, value|
             value_to_parse = record.send("\#{attr_name}_before_type_cast")
             
-            value_to_parse = parse_date_time(value_to_parse) rescue value_to_parse
-            
-            begin
-              result = parse_#{validator}(value_to_parse)
+            unless value_to_parse.blank? && allow_nil
+              value_to_parse = parse_date_time(value_to_parse) rescue value_to_parse
               
-              if failed_restriction = #{validator}_before(result, record, before_restrictions)
-                record.errors.add(attr_name, configuration[:before_message] % failed_restriction)
+              begin
+                result = parse_#{validator}(value_to_parse)
+                
+                if failed_restriction = #{validator}_before(result, record, before_restrictions)
+                  record.errors.add(attr_name, configuration[:before_message] % failed_restriction)
+                end
+                
+                if failed_restriction = #{validator}_after(result, record, after_restrictions)
+                  record.errors.add(attr_name, configuration[:after_message] % failed_restriction)
+                end
+                
+                record.send("\#{attr_name}=", result) unless record.errors.on(attr_name)
+              rescue #{validator.to_s.camelize}ParseError
+                record.errors.add(attr_name, configuration[:message])
               end
-              
-              if failed_restriction = #{validator}_after(result, record, after_restrictions)
-                record.errors.add(attr_name, configuration[:after_message] % failed_restriction)
-              end
-              
-              record.send("\#{attr_name}=", result) unless record.errors.on(attr_name)
-            rescue #{validator.to_s.camelize}ParseError
-              record.errors.add(attr_name, configuration[:message])
             end
           end
         end
