@@ -104,7 +104,9 @@ module ActiveRecord::Validations::DateTime
           validates_each(attr_names, configuration) do |record, attr_name, value|
             value_to_parse = record.send("\#{attr_name}_before_type_cast")
             
-            unless value_to_parse.blank? && allow_nil
+            if value_to_parse.blank? && allow_nil
+              record.send("\#{attr_name}=", nil)
+            else
               value_to_parse = parse_date_time(value_to_parse) rescue value_to_parse
               
               begin
