@@ -7,6 +7,11 @@ class DateTest < Test::Unit::TestCase
     assert p.update_attributes(:date_of_birth => nil, :date_of_death => nil)
   end
   
+  def test_no_allow_nil
+    assert !p.update_attributes(:required_date => "")
+    assert p.errors[:required_date]
+  end
+  
   # Test 1/1/06 format
   def test_first_format
     { '1/1/01'  => '2001-01-01', '29/10/2005' => '2005-10-29', '8\12\63' => '1963-12-08',
@@ -83,5 +88,10 @@ class DateTest < Test::Unit::TestCase
         assert_update_and_equal result, :date_of_birth => value
       end
     end
+  end
+  
+  def test_blank
+    assert p.update_attributes(:date_of_birth => " ")
+    assert_nil p.date_of_birth
   end
 end
