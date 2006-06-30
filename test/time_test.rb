@@ -57,6 +57,6 @@ class TimeTest < Test::Unit::TestCase
   
   def test_blank
     assert p.update_attributes(:time_of_birth => "")
-    assert_nil p.time_of_birth, 'require Rails >= r4327 to pass'
+    assert_nil p.time_of_birth
   end
 end
