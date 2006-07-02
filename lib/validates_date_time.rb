@@ -32,9 +32,7 @@ module ActiveRecord::Validations::DateTime
             end
           end
         end
-      END
-      
-      class_eval <<-END
+        
         def #{method}_meets_relative_restrictions(value, record, restrictions, method)
           restrictions = restrictions.select do |restriction|
             begin
@@ -92,12 +90,13 @@ module ActiveRecord::Validations::DateTime
                             :before_message => "must be before %s",
                             :after_message  => "must be after %s",
                             :on => :save }
+          
           configuration.update(attr_names.pop) if attr_names.last.is_a?(Hash)
+          configuration.assert_valid_keys :message, :before_message, :after_message, :before, :after, :if, :on, :allow_nil
           
           # We must remove this from the configuration that is passed to validates_each because
           # we want to have our own definition of nil that uses the before_type_cast value
           allow_nil = configuration.delete(:allow_nil)
-          configuration.assert_valid_keys :message, :before_message, :after_message, :before, :after, :if, :on
           
           before_restrictions, after_restrictions = relative_#{validator}_restrictions(configuration)
           
@@ -190,7 +189,7 @@ module ActiveRecord::Validations::DateTime
       return value.to_time if value.is_a?(Date)
       raise unless value.is_a?(String)
       
-      value.strip!
+      value = value.strip
       
       # The basic approach is to attempt to parse a date from the front of the string, splitting on spaces.
       # Once a date has been parsed, a time is extracted from the rest of the string.
