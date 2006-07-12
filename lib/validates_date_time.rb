@@ -1,7 +1,7 @@
 module ActiveRecord::Validations::DateTime
-  def self.append_features(base)
-    super
+  def self.included(base)
     base.extend(ClassMethods)
+    base.send(:include, InstanceMethods)
   end
   
   class DateParseError < StandardError #:nodoc:
@@ -24,8 +24,7 @@ module ActiveRecord::Validations::DateTime
           [:before, :after].collect do |option|
             [configuration[option]].flatten.compact.collect do |item|
               case item
-                when Symbol, Proc then item
-                when #{method.to_s.camelize} then item
+                when Symbol, Proc, #{method.to_s.camelize} then item
                 when String then parse_#{method}(item)
                 else raise RestrictionError, "\#{item.class}:\#{item} invalid. Use either a Proc, String, Symbol or #{method.to_s.camelize} object."
               end
@@ -86,7 +85,7 @@ module ActiveRecord::Validations::DateTime
     [:date, :time, :date_time].each do |validator|
       class_eval <<-END
         def validates_#{validator}(*attr_names)
-          configuration = { :message        => "is an invalid #{validator}",
+          configuration = { :message        => "is an invalid #{validator.to_s.humanize.downcase}",
                             :before_message => "must be before %s",
                             :after_message  => "must be after %s",
                             :on => :save }
@@ -128,7 +127,7 @@ module ActiveRecord::Validations::DateTime
         end
       END
     end
-    
+       
    private
     def parse_date(value)
       raise if value.blank?
@@ -231,6 +230,37 @@ module ActiveRecord::Validations::DateTime
       year.to_i
     end
   end
+  
+  module InstanceMethods
+    def execute_callstack_for_multiparameter_attributes_with_temporal_error_handling(callstack)
+      errors = []
+      callstack.each do |name, values|
+        klass = (self.class.reflect_on_aggregation(name.to_sym) || column_for_attribute(name)).klass
+        if values.empty?
+          send("#{name}=", nil)
+        else
+          begin
+            send(name + "=", Time == klass ? klass.local(*values) : klass.new(*values))
+          rescue => ex
+            # Hack: attempt to convert a date value into an appropriately formatted string that will be validated later
+            if klass == Date
+              send("#{name}=", values.join("-"))
+            else
+              errors << ActiveRecord::AttributeAssignmentError.new("error on assignment #{values.inspect} to #{name}", ex, name)
+            end
+          end
+        end
+      end
+      unless errors.empty?
+        raise ActiveRecord::MultiparameterAssignmentErrors.new(errors), "#{errors.size} error(s) on assignment of multiparameter attributes"
+      end
+    end
+  end
 end
 
-ActiveRecord::Base.send(:include, ActiveRecord::Validations::DateTime)
+class ActiveRecord::Base
+  include ActiveRecord::Validations::DateTime
+  
+  alias_method :execute_callstack_for_multiparameter_attributes_without_temporal_error_handling, :execute_callstack_for_multiparameter_attributes
+  alias_method :execute_callstack_for_multiparameter_attributes, :execute_callstack_for_multiparameter_attributes_with_temporal_error_handling
+end
