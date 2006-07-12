@@ -47,6 +47,7 @@ class DateTest < Test::Unit::TestCase
      '1/2/3/4', '11/22/33', '10/10/990', '189 /1 /9', '12\ f m'].each do |value|
       assert !p.update_attributes(:date_of_birth => value), "#{value} should not be valid"
     end
+    assert_match /date/, p.errors[:date_of_birth]
   end
   
   def test_validation
@@ -92,6 +93,18 @@ class DateTest < Test::Unit::TestCase
   
   def test_blank
     assert p.update_attributes(:date_of_birth => " ")
+    assert_nil p.date_of_birth
+  end
+  
+  def test_multi_parameter_attribute_assignment_with_valid_date
+    attributes = { 'date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '10' }
+    assert_nothing_raised { assert p.update_attributes(attributes) }
+    assert_equal Date.new(2006, 2, 10), p.date_of_birth
+  end
+  
+  def test_multi_parameter_attribute_assignment_with_invalid_date
+    attributes = { 'date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '30' }
+    assert_nothing_raised { assert !p.update_attributes(attributes) }
     assert_nil p.date_of_birth
   end
 end

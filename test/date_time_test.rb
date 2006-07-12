@@ -26,5 +26,6 @@ class DateTimeTest < Test::Unit::TestCase
     ['29 Feb 06 1am', '1 Jan 06', '7pm'].each do |value|
       assert_no_update_and_errors :date_and_time_of_birth => value
     end
+    assert_match /date time/, p.errors[:date_and_time_of_birth]
   end
 end

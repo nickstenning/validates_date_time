@@ -41,6 +41,7 @@ class TimeTest < Test::Unit::TestCase
     ['1 PPM', 'lunchtime', '8..30', 'chocolate', '29am'].each do |value|
       assert !p.update_attributes(:time_of_birth => value)
     end
+    assert_match /time/, p.errors[:time_of_birth]
   end
   
   def test_after
@@ -53,6 +54,8 @@ class TimeTest < Test::Unit::TestCase
   end
   
   def test_before
+    assert_no_update_and_errors_match /must be before/, :time_of_birth => Time.now + 1.day
+    assert p.update_attributes(:time_of_birth => Time.now - 1)
   end
   
   def test_blank
