@@ -17,8 +17,8 @@ module ActiveRecord
             raise unless value.is_a?(String)
             
             year, month, day = case value.strip
-              # 22/1/06 or 22\1\06
-              when /^(\d{1,2})[\\\/\.:-](\d{1,2})[\\\/\.:-](\d{2}|\d{4})$/
+              # 22/1/06, 22\1\06 or 22.1.06
+              when /^(\d{1,2})[\\\/\.-](\d{1,2})[\\\/\.-](\d{2}|\d{4})$/
                 ActiveRecord::Validations::DateTime.us_date_format ? [$3, $1, $2] : [$3, $2, $1]
               # 22 Feb 06 or 1 jun 2001
               when /^(\d{1,2}) (\w{3,9}) (\d{2}|\d{4})$/
