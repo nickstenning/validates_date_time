@@ -15,7 +15,7 @@ class DateTest < Test::Unit::TestCase
   # Test 1/1/06 format
   def test_first_format
     { '1/1/01'  => '2001-01-01', '29/10/2005' => '2005-10-29', '8\12\63' => '1963-12-08',
-      '11\1\06' => '2006-01-11', '10.6.05'    => '2005-06-10', '20:9:06' => '2006-09-20' }.each do |value, result|
+      '07/06/2006' => '2006-06-07', '11\1\06' => '2006-01-11', '10.6.05' => '2005-06-10' }.each do |value, result|
       assert_update_and_equal result, :date_of_birth => value
     end
   end
