@@ -107,4 +107,9 @@ class DateTest < Test::Unit::TestCase
     assert_nothing_raised { assert !p.update_attributes(attributes) }
     assert_nil p.date_of_birth
   end
+  
+  def test_invalid_multi_parameter_attribute_assignment
+    attributes = { 'date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '20' }
+    assert_raises(ActiveRecord::MultiparameterAssignmentErrors) { p.update_attributes(attributes) }
+  end
 end
