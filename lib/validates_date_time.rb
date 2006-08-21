@@ -70,8 +70,10 @@ module ActiveRecord::Validations::DateTime
             send(name + "=", Time == klass ? klass.local(*values) : klass.new(*values))
           rescue => ex
             # Hack: attempt to convert a date value into an appropriately formatted string that will be validated later
-            if klass == Date
+            if klass == Date and values.size == 3
               send("#{name}=", values.join("-"))
+            elsif klass == Time and values.size == 6
+              send("#{name}=", "#{values[0..2].join('-')} #{values[3..5].join(':')}")
             else
               errors << ActiveRecord::AttributeAssignmentError.new("error on assignment #{values.inspect} to #{name}", ex, name)
             end

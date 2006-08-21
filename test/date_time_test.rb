@@ -28,4 +28,22 @@ class DateTimeTest < Test::Unit::TestCase
     end
     assert_match /date time/, p.errors[:date_and_time_of_birth]
   end
+  
+    
+  def test_multi_parameter_attribute_assignment_with_valid_date_time
+    attributes = { 'time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '20', 'time_of_birth(4i)' => '23', 'time_of_birth(5i)' => '10', 'time_of_birth(6i)' => '40' }
+    assert_nothing_raised { p.update_attributes(attributes) }
+    assert_equal Time.local(2006, 2, 20, 23, 10, 40), p.time_of_birth
+  end
+  
+  def test_multi_parameter_attribute_assignment_with_invalid_date_time
+    attributes = { 'time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '40', 'time_of_birth(4i)' => '29', 'time_of_birth(5i)' => '888', 'time_of_birth(6i)' => '40' }
+    assert_nothing_raised { !p.update_attributes(attributes) }
+    assert_nil p.time_of_birth
+  end
+  
+  def test_invalid_multi_parameter_attribute_assignment
+    attributes = { 'time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '40', 'time_of_birth(4i)' => '30' }
+    assert_raises(ActiveRecord::MultiparameterAssignmentErrors) { p.update_attributes(attributes) }
+  end
 end
