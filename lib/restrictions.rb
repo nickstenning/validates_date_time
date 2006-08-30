@@ -43,7 +43,13 @@ module ActiveRecord
                   end
                 end
                 
-                restrictions.collect { |r| r.respond_to?(:call) ? r.call(record) : r }.first
+                restrictions.collect do |r|
+                  case r
+                    when Proc;   r.call(record)
+                    when Symbol; r.to_s.humanize
+                    else;        r
+                  end
+                end.first
               end
             END
           end

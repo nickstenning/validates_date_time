@@ -96,6 +96,11 @@ class DateTest < Test::Unit::TestCase
     assert_nil p.date_of_birth
   end
   
+  def test_conversion_of_restriction_result
+    assert !p.update_attributes(:date_of_death => Date.new(2001, 1, 1), :date_of_birth => Date.new(2005, 1, 1))
+    assert_match /Date of birth/, p.errors[:date_of_death]
+  end
+  
   def test_multi_parameter_attribute_assignment_with_valid_date
     attributes = { 'date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '10' }
     assert_nothing_raised { assert p.update_attributes(attributes) }
