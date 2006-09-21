@@ -1,6 +1,6 @@
 mysql:
   :adapter: mysql
   :host: localhost
-  :username: root
-  :password: moose
+  :username: rails
+  :password: 
   :database: validates_date_time_plugin_test
