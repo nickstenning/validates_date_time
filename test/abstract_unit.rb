@@ -7,7 +7,7 @@ rescue LoadError
   require 'rubygems'
   require_gem 'activerecord'
 end
-
+puts "moose_man".camelize
 require 'active_record/fixtures'
 
 require File.dirname(__FILE__) + '/../lib/validates_date_time'
