@@ -18,16 +18,16 @@ module ActiveRecord
             
             year, month, day = case value.strip
               # 22/1/06, 22\1\06 or 22.1.06
-              when /^(\d{1,2})[\\\/\.-](\d{1,2})[\\\/\.-](\d{2}|\d{4})$/
+              when /\A(\d{1,2})[\\\/\.-](\d{1,2})[\\\/\.-](\d{2}|\d{4})\Z/
                 ActiveRecord::Validations::DateTime.us_date_format ? [$3, $1, $2] : [$3, $2, $1]
               # 22 Feb 06 or 1 jun 2001
-              when /^(\d{1,2}) (\w{3,9}) (\d{2}|\d{4})$/
+              when /\A(\d{1,2}) (\w{3,9}) (\d{2}|\d{4})\Z/
                 [$3, $2, $1]
               # July 1 2005
-              when /^(\w{3,9}) (\d{1,2}) (\d{2}|\d{4})$/
+              when /\A(\w{3,9}) (\d{1,2}) (\d{2}|\d{4})\Z/
                 [$3, $1, $2]
               # 2006-01-01
-              when /^(\d{4})-(\d{2})-(\d{2})$/
+              when /\A(\d{4})-(\d{2})-(\d{2})\Z/
                 [$1, $2, $3]
               # Not a valid date string
               else raise
@@ -46,13 +46,13 @@ module ActiveRecord
             
             hour, minute, second = case value.strip
               # 12 hour with minute: 7.30pm, 11:20am, 2 20PM
-              when /^(\d{1,2})[\. :](\d{2})\s?(am|pm)$/i
+              when /\A(\d{1,2})[\. :](\d{2})\s?(am|pm)\Z/i
                 [full_hour($1, $3), $2]
               # 12 hour without minute: 2pm, 11Am, 7 pm
-              when /^(\d{1,2})\s?(am|pm)$/i
+              when /\A(\d{1,2})\s?(am|pm)\Z/i
                 [full_hour($1, $2)]
               # 24 hour: 22:30, 03.10, 12 30
-              when /^(\d{2})[\. :](\d{2})([\. :](\d{2}))?/
+              when /\A(\d{2})[\. :](\d{2})([\. :](\d{2}))?\Z/
                 [$1, $2, $4]
               # Not a valid time string
               else raise
