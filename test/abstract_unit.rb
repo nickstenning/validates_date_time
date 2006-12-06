@@ -1,7 +1,8 @@
 require 'test/unit'
 
 begin
-  require File.dirname(__FILE__) + '/../../../../config/environment'
+  require File.dirname(__FILE__) + '/../../../../config/boot'
+  Rails::Initializer.run
 rescue LoadError
   require 'rubygems'
   require_gem 'activerecord'
