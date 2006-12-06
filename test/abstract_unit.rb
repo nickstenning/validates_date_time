@@ -1,11 +1,18 @@
 require 'test/unit'
 
 begin
-  require File.dirname(__FILE__) + '/../../../../config/boot'
-  require 'active_record'
+  require File.dirname(__FILE__) + '/../../../../config/environment'
 rescue LoadError
   require 'rubygems'
   require_gem 'activerecord'
+end
+
+# Search for fixtures first
+fixture_path = File.dirname(__FILE__) + '/fixtures/'
+begin
+  Dependencies.load_paths.insert(0, fixture_path)
+rescue
+  $LOAD_PATH.unshift(fixture_path)
 end
 
 require 'active_record/fixtures'
@@ -19,21 +26,9 @@ ActiveRecord::Base.establish_connection(config[ENV['DB'] || 'mysql'])
 load(File.dirname(__FILE__) + '/schema.rb')
 
 Test::Unit::TestCase.fixture_path = File.dirname(__FILE__) + '/fixtures/'
-$LOAD_PATH.unshift(Test::Unit::TestCase.fixture_path)
 
 class Test::Unit::TestCase #:nodoc:
-  def create_fixtures(*table_names)
-    if block_given?
-      Fixtures.create_fixtures(Test::Unit::TestCase.fixture_path, table_names) { yield }
-    else
-      Fixtures.create_fixtures(Test::Unit::TestCase.fixture_path, table_names)
-    end
-  end
-
-  # Turn off transactional fixtures if you're working with MyISAM tables in MySQL
   self.use_transactional_fixtures = true
-  
-  # Instantiated fixtures are slow, but give you @david where you otherwise would need people(:david)
   self.use_instantiated_fixtures  = false
   
   def p
