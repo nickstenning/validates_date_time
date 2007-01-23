@@ -1,5 +1,11 @@
 = validates_date_time
 
+If you find this plugin useful, please consider a donation to show your support!
+
+  http://www.paypal.com/cgi-bin/webscr?cmd=_send-money&email=jonathan.viney@gmail.com
+  
+== Instructions
+
 This plugin adds the ability to do stricter date and time checking with ActiveRecord.
 
 The validators can be used to parse strings into <tt>Date</tt> and <tt>Time</tt> objects as well as restrict
