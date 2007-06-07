@@ -7,7 +7,7 @@ class Person < ActiveRecord::Base
   validates_time :time_of_birth, :allow_nil => true, :before => [Proc.new { Time.now }]
   validates_time :time_of_death, :allow_nil => true, :after => [:time_of_birth, '7pm'], :before => [Proc.new { 10.years.from_now }]
   
-  validates_date_time :date_and_time_of_birth, :allow_nil => true
+  validates_date_time :date_and_time_of_birth, :allow_nil => true, :before => '2008-01-01 01:01:01', :after => '1981-01-01 01:01am'
   
   validates_date :required_date
 end

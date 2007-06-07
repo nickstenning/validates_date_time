@@ -1,3 +1,8 @@
-* Remove unused colon separated date format (dd:mm:yy) from parsing
+[7 Jun 07]
 
-* Changelog added
+ * Datetime restrictions should be parsed as datetimes [Adam Meehan]
+ 
+[Earlier]
+
+ * Remove unused colon separated date format (dd:mm:yy) from parsing
+ 

@@ -20,9 +20,9 @@ require 'active_record/fixtures'
 
 require File.dirname(__FILE__) + '/../lib/validates_date_time'
 
-config = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
+ActiveRecord::Base.configurations = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
 ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + '/debug.log')
-ActiveRecord::Base.establish_connection(config[ENV['DB'] || 'mysql'])
+ActiveRecord::Base.establish_connection(ENV['DB'] || 'mysql')
 
 load(File.dirname(__FILE__) + '/schema.rb')
 
@@ -30,7 +30,7 @@ Test::Unit::TestCase.fixture_path = File.dirname(__FILE__) + '/fixtures/'
 
 class Test::Unit::TestCase #:nodoc:
   self.use_transactional_fixtures = true
-  self.use_instantiated_fixtures  = false
+  self.use_instantiated_fixtures = false
   
   def p
     people(:jonathan)
