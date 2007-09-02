@@ -1,3 +1,7 @@
+[2 Sep 2007]
+
+ * Allow date and time formats like "February 5, 2006" and "September 01, 2007 06:10". [Mark A. Lane]
+
 [7 Jun 07]
 
  * Datetime restrictions should be parsed as datetimes [Adam Meehan]

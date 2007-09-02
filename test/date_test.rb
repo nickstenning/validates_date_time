@@ -30,7 +30,7 @@ class DateTest < Test::Unit::TestCase
   
   # Test February 4 2006 formats
   def test_third_format
-    { 'february 4 06' => '2006-02-04', 'DECember 25 1850' => '1850-12-25' }.each do |value, result|
+    { 'february 4 06' => '2006-02-04', 'DECember 25 1850' => '1850-12-25', 'February 5, 2006' => '2006-02-05' }.each do |value, result|
       assert_update_and_equal result, :date_of_birth => value
     end
   end
