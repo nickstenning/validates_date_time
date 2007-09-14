@@ -27,7 +27,7 @@ Use <tt>:allow_nil</tt> to allow the value to be blank.
   
 == Installation
  
-  script/plugin install http://svn.viney.net.nz/things/rails/plugins/validates_date_time 
+  script/plugin install http://svn.viney.net.nz/things/trunk/rails_plugins/validates_date_time 
 
 == Supported formats
 
