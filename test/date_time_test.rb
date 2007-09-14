@@ -5,10 +5,11 @@ class DateTimeTest < Test::Unit::TestCase
   
   def test_various_formats
     formats = {
-      '2006-01-01 01:01:01' => /Jan 01 01:01:01 [\w ]+ 2006/,
-      '2/2/06 7pm'          => /Feb 02 19:00:00 [\w ]+ 2006/,
-      '10 AUG 04 6.23am'    => /Aug 10 06:23:00 [\w ]+ 2004/,
-      '6 June 1981 10 10'   => /Jun 06 10:10:00 [\w ]+ 1981/
+      '2006-01-01 01:01:01' => /Jan 01 01:01:01 [\+-]?[\w ]+ 2006/,
+      '2/2/06 7pm'          => /Feb 02 19:00:00 [\+-]?[\w ]+ 2006/,
+      '10 AUG 04 6.23am'    => /Aug 10 06:23:00 [\+-]?[\w ]+ 2004/,
+      '6 June 1981 10 10'   => /Jun 06 10:10:00 [\+-]?[\w ]+ 1981/,
+      'September 01, 2007 06:10' => /Sep 01 06:10:00 [\+-]?[\w ]+ 2007/
     }
     
     formats.each do |value, result|
@@ -29,21 +30,33 @@ class DateTimeTest < Test::Unit::TestCase
     assert_match /date time/, p.errors[:date_and_time_of_birth]
   end
   
-    
+  def test_before_and_after_restrictions_parsed_as_date_times    
+    assert_no_update_and_errors_match /before/, :date_and_time_of_birth => '2008-01-02 00:00:00'
+    assert p.update_attributes(:date_and_time_of_birth => '2008-01-01 01:01:00')
+    assert_no_update_and_errors_match /after/, :date_and_time_of_birth => '1981-01-01 01:00am'
+    assert p.update_attributes(:date_and_time_of_birth => '1981-01-01 01:02am')
+  end
+  
   def test_multi_parameter_attribute_assignment_with_valid_date_time
     attributes = { 'time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '20', 'time_of_birth(4i)' => '23', 'time_of_birth(5i)' => '10', 'time_of_birth(6i)' => '40' }
-    assert_nothing_raised { p.update_attributes(attributes) }
+    assert_nothing_raised do
+      assert p.update_attributes(attributes)
+    end
     assert_equal Time.local(2006, 2, 20, 23, 10, 40), p.time_of_birth
   end
   
   def test_multi_parameter_attribute_assignment_with_invalid_date_time
-    attributes = { 'time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '40', 'time_of_birth(4i)' => '29', 'time_of_birth(5i)' => '888', 'time_of_birth(6i)' => '40' }
-    assert_nothing_raised { !p.update_attributes(attributes) }
-    assert_nil p.time_of_birth
+    attributes = { 'time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '10', 'time_of_birth(4i)' => '30', 'time_of_birth(5i)' => '88', 'time_of_birth(6i)' => '100' }
+    assert_nothing_raised do
+      assert !p.update_attributes(attributes)
+    end
+    assert p.errors[:time_of_birth]
   end
   
-  def test_invalid_multi_parameter_attribute_assignment
-    attributes = { 'time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '40', 'time_of_birth(4i)' => '30' }
-    assert_raises(ActiveRecord::MultiparameterAssignmentErrors) { p.update_attributes(attributes) }
+  def test_incomplete_multi_parameter_attribute_assignment
+    assert_nothing_raised do
+      assert !p.update_attributes('time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '1')
+    end
+    assert p.errors[:time_of_birth]
   end
 end

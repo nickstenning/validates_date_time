@@ -3,4 +3,4 @@ mysql:
   :host: localhost
   :username: rails
   :password: 
-  :database: validates_date_time_plugin_test
+  :database: rails_plugin_test

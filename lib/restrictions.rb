@@ -6,7 +6,7 @@ module ActiveRecord
         end
         
         class << self
-          [:date, :time].each do |method|
+          [:date, :time, :date_time].each do |method|
             class_eval <<-END
               def relative_#{method}_restrictions(configuration)
                 [:before, :after].collect do |option|
@@ -32,7 +32,7 @@ module ActiveRecord
                         result = Parser.parse_#{method}(result) unless result.is_a?(#{method.to_s.camelize})
                         value.send(method, result)
                         
-                      when #{method.to_s.camelize}
+                      when Date, Time
                         value.send(method, restriction)
                         
                       else
@@ -54,8 +54,6 @@ module ActiveRecord
             END
           end
           
-          alias_method :relative_date_time_restrictions, :relative_time_restrictions
-          
           def date_before(value, record, restrictions)
             date_meets_relative_restrictions(value, record, restrictions, :>)
           end
@@ -72,8 +70,13 @@ module ActiveRecord
             time_meets_relative_restrictions(value, record, restrictions, :<=)
           end
           
-          alias_method :date_time_before, :time_before
-          alias_method :date_time_after,  :time_after
+          def date_time_before(value, record, restrictions)
+            date_time_meets_relative_restrictions(value, record, restrictions, :>)
+          end
+          
+          def date_time_after(value, record, restrictions)
+            date_time_meets_relative_restrictions(value, record, restrictions, :<=)
+          end
         end
       end
     end
