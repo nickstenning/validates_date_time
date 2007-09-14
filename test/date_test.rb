@@ -30,7 +30,7 @@ class DateTest < Test::Unit::TestCase
   
   # Test February 4 2006 formats
   def test_third_format
-    { 'february 4 06' => '2006-02-04', 'DECember 25 1850' => '1850-12-25' }.each do |value, result|
+    { 'february 4 06' => '2006-02-04', 'DECember 25 1850' => '1850-12-25', 'February 5, 2006' => '2006-02-05' }.each do |value, result|
       assert_update_and_equal result, :date_of_birth => value
     end
   end
@@ -102,19 +102,23 @@ class DateTest < Test::Unit::TestCase
   end
   
   def test_multi_parameter_attribute_assignment_with_valid_date
-    attributes = { 'date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '10' }
-    assert_nothing_raised { assert p.update_attributes(attributes) }
+    assert_nothing_raised do
+      assert p.update_attributes('date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '10')
+    end
     assert_equal Date.new(2006, 2, 10), p.date_of_birth
   end
   
   def test_multi_parameter_attribute_assignment_with_invalid_date
-    attributes = { 'date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '30' }
-    assert_nothing_raised { assert !p.update_attributes(attributes) }
-    assert_nil p.date_of_birth
+    assert_nothing_raised do
+      assert !p.update_attributes('date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '30')
+    end
+    assert p.errors[:date_of_birth]
   end
   
-  def test_invalid_multi_parameter_attribute_assignment
-    attributes = { 'date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '20' }
-    assert_raises(ActiveRecord::MultiparameterAssignmentErrors) { p.update_attributes(attributes) }
+  def test_incomplete_multi_parameter_attribute_assignment
+    assert_nothing_raised do
+      assert !p.update_attributes('date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '1', 'date_of_birth(3i)' => '')
+    end
+    assert p.errors[:date_of_birth]
   end
 end

@@ -63,18 +63,24 @@ module ActiveRecord::Validations::DateTime
       errors = []
       callstack.each do |name, values|
         klass = (self.class.reflect_on_aggregation(name.to_sym) || column_for_attribute(name)).klass
+        
         if values.empty?
           send("#{name}=", nil)
         else
-          begin
-            send(name + "=", Time == klass ? klass.local(*values) : klass.new(*values))
-          rescue => ex
-            # Hack: attempt to convert a date value into an appropriately formatted string that will be validated later
-            if klass == Date and values.size == 3
-              send("#{name}=", values.join("-"))
-            elsif klass == Time and values.size == 6
-              send("#{name}=", "#{values[0..2].join('-')} #{values[3..5].join(':')}")
-            else
+          if [Date, Time].include?(klass)
+            values = values.map(&:to_s)
+            date_string = [values.shift.rjust(4, "0"), *values.slice!(0, 2).map { |s| s.rjust(2, "0") }].join('-')
+            
+            if klass == Date
+              send("#{name}=", date_string)
+            elsif klass == Time
+              time_string = values.map { |s| s.rjust(2, "0") }.join(':')
+              send("#{name}=", "#{date_string} #{time_string}")
+            end
+          else
+            begin
+              send(name + "=", Time == klass ? klass.local(*values) : klass.new(*values))
+            rescue => ex
               errors << ActiveRecord::AttributeAssignmentError.new("error on assignment #{values.inspect} to #{name}", ex, name)
             end
           end

@@ -1,5 +1,13 @@
 = validates_date_time
 
+If you find this plugin useful, please consider a donation to show your support!
+
+  http://www.paypal.com/cgi-bin/webscr?cmd=_send-money
+  
+  Email address: jonathan.viney@gmail.com
+  
+== Instructions
+
 This plugin adds the ability to do stricter date and time checking with ActiveRecord.
 
 The validators can be used to parse strings into <tt>Date</tt> and <tt>Time</tt> objects as well as restrict
@@ -11,9 +19,15 @@ an attribute based on other dates or times.
     validates_date_time :date_and_time_of_birth
   end
   
+Use <tt>:allow_nil</tt> to allow the value to be blank.
+
+  class Person < ActiveRecord::Base
+    validates_date :date_of_birth, :allow_nil => true
+  end
+  
 == Installation
  
-  script/plugin install http://svn.viney.net.nz/things/rails/plugins/validates_date_time 
+  script/plugin install http://svn.viney.net.nz/things/trunk/rails_plugins/validates_date_time 
 
 == Supported formats
 
