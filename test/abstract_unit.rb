@@ -10,11 +10,7 @@ end
 
 # Search for fixtures first
 fixture_path = File.dirname(__FILE__) + '/fixtures/'
-begin
-  Dependencies.load_paths.insert(0, fixture_path)
-rescue
-  $LOAD_PATH.unshift(fixture_path)
-end
+Dependencies.load_paths.insert(0, fixture_path)
 
 require 'active_record/fixtures'
 
@@ -32,26 +28,23 @@ class Test::Unit::TestCase #:nodoc:
   self.use_transactional_fixtures = true
   self.use_instantiated_fixtures = false
   
+  fixtures :people
+  
   def p
     people(:jonathan)
   end
   
   def assert_update_and_equal(expected, attributes = {})
-    assert p.update_attributes(attributes), "#{attributes.inspect} should be valid"
-    assert_equal expected, p.reload.send(attributes.keys.first).to_s
+    assert p.update_attributes!(attributes), "#{attributes.inspect} should be valid"
+    assert_equal expected, p.send(attributes.keys.first).to_s
   end
   
   def assert_update_and_match(expected, attributes = {})
-    assert p.update_attributes(attributes), "#{attributes.inspect} should be valid"
-    assert_match expected, p.reload.send(attributes.keys.first).to_s
+    assert p.update_attributes!(attributes), "#{attributes.inspect} should be valid"
+    assert_match expected, p.send(attributes.keys.first).to_s
   end
   
-  def assert_no_update_and_errors(attributes = {})
-    assert !p.update_attributes(attributes)
-    assert p.errors.on(attributes.keys.first)
-  end
-  
-  def assert_no_update_and_errors_match(expected, attributes = {})
+  def assert_invalid_and_errors_match(expected, attributes = {})
     assert !p.update_attributes(attributes)
     assert_match expected, p.errors.full_messages.join
   end
@@ -59,6 +52,7 @@ class Test::Unit::TestCase #:nodoc:
   def with_us_date_format(&block)
     ActiveRecord::Validations::DateTime.us_date_format = true
     yield
+  ensure
     ActiveRecord::Validations::DateTime.us_date_format = false
   end
 end
