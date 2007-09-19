@@ -1,8 +1,6 @@
 require File.dirname(__FILE__) + '/abstract_unit'
 
 class DateTimeTest < Test::Unit::TestCase
-  fixtures :people
-  
   def test_various_formats
     formats = {
       '2006-01-01 01:01:01' => /Jan 01 01:01:01 [\+-]?[\w ]+ 2006/,
@@ -25,31 +23,33 @@ class DateTimeTest < Test::Unit::TestCase
   
   def test_invalid_formats
     ['29 Feb 06 1am', '1 Jan 06', '7pm'].each do |value|
-      assert_no_update_and_errors :date_and_time_of_birth => value
+      assert_invalid_and_errors_match /date time/, :date_and_time_of_birth => value
     end
-    assert_match /date time/, p.errors[:date_and_time_of_birth]
   end
   
   def test_before_and_after_restrictions_parsed_as_date_times    
-    assert_no_update_and_errors_match /before/, :date_and_time_of_birth => '2008-01-02 00:00:00'
-    assert p.update_attributes(:date_and_time_of_birth => '2008-01-01 01:01:00')
-    assert_no_update_and_errors_match /after/, :date_and_time_of_birth => '1981-01-01 01:00am'
-    assert p.update_attributes(:date_and_time_of_birth => '1981-01-01 01:02am')
+    assert_invalid_and_errors_match /before/, :date_and_time_of_birth => '2008-01-02 00:00:00'
+    assert p.update_attributes!(:date_and_time_of_birth => '2008-01-01 01:01:00')
+    
+    assert_invalid_and_errors_match /after/, :date_and_time_of_birth => '1981-01-01 01:00am'
+    assert p.update_attributes!(:date_and_time_of_birth => '1981-01-01 01:02am')
   end
   
   def test_multi_parameter_attribute_assignment_with_valid_date_time
-    attributes = { 'time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '20', 'time_of_birth(4i)' => '23', 'time_of_birth(5i)' => '10', 'time_of_birth(6i)' => '40' }
     assert_nothing_raised do
-      assert p.update_attributes(attributes)
+      assert p.update_attributes('time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '20',
+        'time_of_birth(4i)' => '23', 'time_of_birth(5i)' => '10', 'time_of_birth(6i)' => '40')
     end
-    assert_equal Time.local(2006, 2, 20, 23, 10, 40), p.time_of_birth
+    
+    assert_equal Time.local(2000, 1, 1, 23, 10, 40), p.time_of_birth
   end
   
   def test_multi_parameter_attribute_assignment_with_invalid_date_time
-    attributes = { 'time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '10', 'time_of_birth(4i)' => '30', 'time_of_birth(5i)' => '88', 'time_of_birth(6i)' => '100' }
     assert_nothing_raised do
-      assert !p.update_attributes(attributes)
+      assert !p.update_attributes('time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '10',
+        'time_of_birth(4i)' => '30', 'time_of_birth(5i)' => '88', 'time_of_birth(6i)' => '100')
     end
+    
     assert p.errors[:time_of_birth]
   end
   
@@ -57,6 +57,7 @@ class DateTimeTest < Test::Unit::TestCase
     assert_nothing_raised do
       assert !p.update_attributes('time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '1')
     end
+    
     assert p.errors[:time_of_birth]
   end
 end

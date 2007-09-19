@@ -1,3 +1,7 @@
+[19 September 2007]
+
+* Almost a complete rewrite! API unchanged. Let me know if there are any issues.
+
 [2 Sep 2007]
 
  * Allow date and time formats like "February 5, 2006" and "September 01, 2007 06:10". [Mark A. Lane]

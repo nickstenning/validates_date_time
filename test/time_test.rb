@@ -1,10 +1,8 @@
 require File.dirname(__FILE__) + '/abstract_unit'
 
 class TimeTest < Test::Unit::TestCase
-  fixtures :people
-  
-  def test_no_time_checking
-    assert p.update_attributes(:time_of_birth => nil, :time_of_death => nil, :time_of_death => nil)
+  def test_valid_when_nil
+    assert p.update_attributes!(:time_of_birth => nil, :time_of_death => nil, :time_of_death => nil)
   end
   
   def test_with_seconds
@@ -45,21 +43,21 @@ class TimeTest < Test::Unit::TestCase
   end
   
   def test_after
-    assert_no_update_and_errors_match /must be after/, :time_of_death => '6pm'
+    assert_invalid_and_errors_match /must be after/, :time_of_death => '6pm'
     
-    assert p.update_attributes(:time_of_death => '8pm')
-    assert p.update_attributes(:time_of_death => nil, :time_of_birth => Time.gm(2001, 1, 1, 9))
+    assert p.update_attributes!(:time_of_death => '8pm')
+    assert p.update_attributes!(:time_of_death => nil, :time_of_birth => Time.gm(2001, 1, 1, 9))
     
-    assert_no_update_and_errors_match /must be after/, :time_of_death => '7am'
+    assert_invalid_and_errors_match /must be after/, :time_of_death => '7am'
   end
   
   def test_before
-    assert_no_update_and_errors_match /must be before/, :time_of_birth => Time.now + 1.day
-    assert p.update_attributes(:time_of_birth => Time.now - 1)
+    assert_invalid_and_errors_match /must be before/, :time_of_birth => Time.now + 1.day
+    assert p.update_attributes!(:time_of_birth => Time.now - 1)
   end
   
   def test_blank
-    assert p.update_attributes(:time_of_birth => "")
+    assert p.update_attributes!(:time_of_birth => " ")
     assert_nil p.time_of_birth
   end
 end

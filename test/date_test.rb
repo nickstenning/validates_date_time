@@ -1,15 +1,12 @@
 require File.dirname(__FILE__) + '/abstract_unit'
 
 class DateTest < Test::Unit::TestCase
-  fixtures :people
-  
-  def test_no_date_checking
-    assert p.update_attributes(:date_of_birth => nil, :date_of_death => nil)
+  def test_valid_when_nil
+    assert p.update_attributes!(:date_of_birth => nil, :date_of_death => nil)
   end
   
-  def test_no_allow_nil
-    assert !p.update_attributes(:required_date => "")
-    assert p.errors[:required_date]
+  def test_date_required
+    assert_invalid_and_errors_match /invalid/, :required_date => ""
   end
   
   # Test 1/1/06 format
@@ -41,44 +38,40 @@ class DateTest < Test::Unit::TestCase
     end
   end
   
+  def test_format_without_validation
+    assert_equal Date.new(2005, 12, 11).to_s, Person.new(:date_of_birth => "11/12/05").date_of_birth.to_s
+  end
+  
   def test_invalid_formats
     ['aksjhdaksjhd', 'meow', 'chocolate',
      '221 jan 05', '21 JAN 001', '1 Jaw 00', '1 Febrarary 2003', '30/2/06',
      '1/2/3/4', '11/22/33', '10/10/990', '189 /1 /9', '12\ f m'].each do |value|
-      assert !p.update_attributes(:date_of_birth => value), "#{value} should not be valid"
+      assert_invalid_and_errors_match /invalid/,  :date_of_birth => value
     end
-    assert_match /date/, p.errors[:date_of_birth]
-  end
-  
-  def test_validation
-    p.valid?
-    p.valid?
   end
   
   def test_date_objects
-    assert_update_and_equal '2006-01-01', :date_of_birth => Date.new(2006, 1, 1)
     assert_update_and_equal '1963-04-05', :date_of_birth => Date.new(1963, 4, 5)
   end
   
   def test_before_and_after
-    assert p.update_attributes(:date_of_death => '1950-01-01')
+    p.update_attributes!(:date_of_death => '1950-01-01')
+    assert_invalid_and_errors_match /before/, :date_of_death => (Date.today + 2).to_s
+    assert_invalid_and_errors_match /before/, :date_of_death => Date.new(2030, 1, 1)
     
-    assert_no_update_and_errors_match /before/, :date_of_death => (Date.today + 2).to_s
-    assert_no_update_and_errors_match /before/, :date_of_death => Date.new(2030, 1, 1)
-    
-    assert p.update_attributes(:date_of_birth => '1950-01-01', :date_of_death => nil)
-    assert_no_update_and_errors_match /after/, :date_of_death => '1949-01-01'
-    assert p.update_attributes(:date_of_death => Date.new(1951, 1, 1))
+    p.update_attributes!(:date_of_birth => '1950-01-01', :date_of_death => nil)
+    assert_invalid_and_errors_match /after/, :date_of_death => '1949-01-01'
+    assert p.update_attributes!(:date_of_death => Date.new(1951, 1, 1))
   end
   
   def test_before_and_after_with_custom_message
-    assert_no_update_and_errors_match /avant/, :date_of_arrival => 2.years.from_now.to_date, :date_of_departure => 2.years.ago.to_date
-    assert_no_update_and_errors_match /apres/, :date_of_arrival => '1792-03-03'
+    assert_invalid_and_errors_match /avant/, :date_of_arrival => 2.years.from_now, :date_of_departure => 2.years.ago
+    assert_invalid_and_errors_match /apres/, :date_of_arrival => '1792-03-03'
   end
   
   def test_dates_with_unknown_year
-    assert p.update_attributes(:date_of_birth => '9999-12-11')
-    assert p.update_attributes(:date_of_birth => Date.new(9999, 1, 1))
+    assert p.update_attributes!(:date_of_birth => '9999-12-11')
+    assert p.update_attributes!(:date_of_birth => Date.new(9999, 1, 1))
   end
   
   def test_us_date_format
@@ -92,26 +85,27 @@ class DateTest < Test::Unit::TestCase
   end
   
   def test_blank
-    assert p.update_attributes(:date_of_birth => " ")
+    assert p.update_attributes!(:date_of_birth => " ")
     assert_nil p.date_of_birth
   end
   
   def test_conversion_of_restriction_result
-    assert !p.update_attributes(:date_of_death => Date.new(2001, 1, 1), :date_of_birth => Date.new(2005, 1, 1))
-    assert_match /Date of birth/, p.errors[:date_of_death]
+    assert_invalid_and_errors_match /Date of birth/, :date_of_death => Date.new(2001, 1, 1), :date_of_birth => Date.new(2005, 1, 1)
   end
   
   def test_multi_parameter_attribute_assignment_with_valid_date
     assert_nothing_raised do
-      assert p.update_attributes('date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '10')
+      p.update_attributes!('date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '10')
     end
+    
     assert_equal Date.new(2006, 2, 10), p.date_of_birth
   end
   
   def test_multi_parameter_attribute_assignment_with_invalid_date
     assert_nothing_raised do
-      assert !p.update_attributes('date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '30')
+      p.update_attributes!('date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '30')
     end
+    
     assert p.errors[:date_of_birth]
   end
   
@@ -119,6 +113,7 @@ class DateTest < Test::Unit::TestCase
     assert_nothing_raised do
       assert !p.update_attributes('date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '1', 'date_of_birth(3i)' => '')
     end
+    
     assert p.errors[:date_of_birth]
   end
 end
