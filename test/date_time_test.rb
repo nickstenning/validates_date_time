@@ -35,29 +35,37 @@ class DateTimeTest < Test::Unit::TestCase
     assert p.update_attributes!(:date_and_time_of_birth => '1981-01-01 01:02am')
   end
   
-  def test_multi_parameter_attribute_assignment_with_valid_date_time
+  def test_multi_parameter_attribute_assignment_with_valid_date_times
     assert_nothing_raised do
-      assert p.update_attributes('time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '20',
-        'time_of_birth(4i)' => '23', 'time_of_birth(5i)' => '10', 'time_of_birth(6i)' => '40')
+      p.update_attributes!('date_and_time_of_birth(1i)' => '2006', 'date_and_time_of_birth(2i)' => '2', 'date_and_time_of_birth(3i)' => '20',
+        'date_and_time_of_birth(4i)' => '23', 'date_and_time_of_birth(5i)' => '10', 'date_and_time_of_birth(6i)' => '40')
     end
     
-    assert_equal Time.local(2000, 1, 1, 23, 10, 40), p.time_of_birth
+    assert_equal Time.local(2006, 2, 20, 23, 10, 40), p.date_and_time_of_birth
+    
+    # Without second parameter
+    assert_nothing_raised do
+      p.update_attributes!('date_and_time_of_birth(1i)' => '2004', 'date_and_time_of_birth(2i)' => '3', 'date_and_time_of_birth(3i)' => '14',
+        'date_and_time_of_birth(4i)' => '22', 'date_and_time_of_birth(5i)' => '20')
+    end
+    
+    assert_equal Time.local(2004, 3, 14, 22, 20), p.date_and_time_of_birth
   end
   
   def test_multi_parameter_attribute_assignment_with_invalid_date_time
     assert_nothing_raised do
-      assert !p.update_attributes('time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '10',
-        'time_of_birth(4i)' => '30', 'time_of_birth(5i)' => '88', 'time_of_birth(6i)' => '100')
+      assert !p.update_attributes('date_and_time_of_birth(1i)' => '2006', 'date_and_time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '10',
+        'date_and_time_of_birth(4i)' => '30', 'date_and_time_of_birth(5i)' => '88', 'date_and_time_of_birth(6i)' => '100')
     end
     
-    assert p.errors[:time_of_birth]
+    assert p.errors[:date_and_time_of_birth]
   end
   
   def test_incomplete_multi_parameter_attribute_assignment
     assert_nothing_raised do
-      assert !p.update_attributes('time_of_birth(1i)' => '2006', 'time_of_birth(2i)' => '1')
+      assert !p.update_attributes('date_and_time_of_birth(1i)' => '2006', 'date_and_time_of_birth(2i)' => '1')
     end
     
-    assert p.errors[:time_of_birth]
+    assert p.errors[:date_and_time_of_birth]
   end
 end

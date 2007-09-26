@@ -50,9 +50,9 @@ class Test::Unit::TestCase #:nodoc:
   end
   
   def with_us_date_format(&block)
-    ActiveRecord::Validations::DateTime.us_date_format = true
+    ValidatesDateTime.us_date_format = true
     yield
   ensure
-    ActiveRecord::Validations::DateTime.us_date_format = false
+    ValidatesDateTime.us_date_format = false
   end
 end
