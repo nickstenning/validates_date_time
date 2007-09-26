@@ -103,7 +103,7 @@ class DateTest < Test::Unit::TestCase
   
   def test_multi_parameter_attribute_assignment_with_invalid_date
     assert_nothing_raised do
-      p.update_attributes!('date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '30')
+      assert !p.update_attributes('date_of_birth(1i)' => '2006', 'date_of_birth(2i)' => '2', 'date_of_birth(3i)' => '30')
     end
     
     assert p.errors[:date_of_birth]
