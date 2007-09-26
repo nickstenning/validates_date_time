@@ -60,4 +60,28 @@ class TimeTest < Test::Unit::TestCase
     assert p.update_attributes!(:time_of_birth => " ")
     assert_nil p.time_of_birth
   end
+  
+  def test_multi_parameter_attribute_assignment_with_valid_time
+    assert_nothing_raised do
+      p.update_attributes!('time_of_birth(1i)' => '3', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '10')
+    end
+    
+    assert_equal Time.local(2000, 1, 1, 3, 2, 10), p.time_of_birth
+  end
+  
+  def test_multi_parameter_attribute_assignment_with_invalid_time
+    assert_nothing_raised do
+      assert !p.update_attributes('time_of_birth(1i)' => '23', 'time_of_birth(2i)' => '2', 'time_of_birth(3i)' => '77')
+    end
+    
+    assert p.errors[:time_of_birth]
+  end
+  
+  def test_incomplete_multi_parameter_attribute_assignment
+    assert_nothing_raised do
+      assert !p.update_attributes('time_of_birth(1i)' => '10')
+    end
+    
+    assert p.errors[:time_of_birth]
+  end
 end

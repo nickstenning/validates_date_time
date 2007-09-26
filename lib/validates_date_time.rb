@@ -1,9 +1,12 @@
 require File.dirname(__FILE__) + '/parser'
+require File.dirname(__FILE__) + '/multiparameter_attributes'
 
-module ActiveRecord::Validations::DateTime
+module ValidatesDateTime
   def self.included(base)
-    base.extend(ClassMethods)
-    base.send(:include, InstanceMethods)
+    base.class_eval do
+      extend ClassMethods
+      include MultiparameterAttributes
+    end
   end
   
   mattr_accessor :us_date_format
@@ -133,57 +136,15 @@ module ActiveRecord::Validations::DateTime
     end
     
     def temporal_validation_options(options, args)
-      options.reverse_merge!(DEFAULT_TEMPORAL_VALIDATION_OPTIONS)
-      options.update(args.pop) if args.last.is_a?(Hash)
-      options.assert_valid_keys :message, :before_message, :after_message, :before, :after, :if, :on, :allow_nil
-      options
-    end
-  end
-  
-  module InstanceMethods
-    def execute_callstack_for_multiparameter_attributes_with_temporal_error_handling(callstack)
-      errors = []
-      callstack.each do |name, values|
-        klass = (self.class.reflect_on_aggregation(name.to_sym) || column_for_attribute(name)).klass
-        
-        if values.empty?
-          send("#{name}=", nil)
-        else
-          column = column_for_attribute(name)
-          
-          if [:date, :time, :datetime].include?(column.type)
-            values = values.map(&:to_s)
-            
-            string = case column.type
-              when :date
-                extract_date_from_multiparameter_attributes(values)
-              when :time
-                extract_time_from_multiparameter_attributes(values)
-              when :datetime
-                extract_date_from_multiparameter_attributes(values) + " " + extract_time_from_multiparameter_attributes(values)
-            end
-                   
-            send("#{name}=", string)
-          end
-        end
+      returning options do
+        options.reverse_merge!(DEFAULT_TEMPORAL_VALIDATION_OPTIONS)
+        options.update(args.pop) if args.last.is_a?(Hash)
+        options.assert_valid_keys :message, :before_message, :after_message, :before, :after, :if, :on, :allow_nil
       end
-      unless errors.empty?
-        raise ActiveRecord::MultiparameterAssignmentErrors.new(errors), "#{errors.size} error(s) on assignment of multiparameter attributes"
-      end
-    end
-    
-    def extract_date_from_multiparameter_attributes(values)
-      [values[0], *values.slice(1, 2).map { |s| s.rjust(2, "0") }].join("-")
-    end
-    
-    def extract_time_from_multiparameter_attributes(values)
-      values.last(3).map { |s| s.rjust(2, "0") }.join(":")
     end
   end
 end
 
 class ActiveRecord::Base
-  include ActiveRecord::Validations::DateTime
-  
-  alias_method_chain :execute_callstack_for_multiparameter_attributes, :temporal_error_handling
+  include ValidatesDateTime
 end
