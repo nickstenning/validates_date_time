@@ -148,3 +148,14 @@ end
 class ActiveRecord::Base
   include ValidatesDateTime
 end
+
+# Preserve some compatibility with the old namepsace
+module ActiveRecord::Validations::DateTime
+  def self.us_date_format
+    ::ValidatesDateTime.us_date_format
+  end
+  
+  def self.us_date_format=(value)
+    ::ValidatesDateTime.us_date_format = value
+  end
+end

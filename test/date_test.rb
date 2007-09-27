@@ -116,4 +116,15 @@ class DateTest < Test::Unit::TestCase
     
     assert p.errors[:date_of_birth]
   end
+  
+  def test_compatibility_with_old_namespace
+    original_format = ValidatesDateTime.us_date_format
+    
+    assert_equal ValidatesDateTime.us_date_format, ActiveRecord::Validations::DateTime.us_date_format
+    
+    ActiveRecord::Validations::DateTime.us_date_format = 123
+    assert_equal 123, ValidatesDateTime.us_date_format
+  ensure
+    ValidatesDateTime.us_date_format = original_format
+  end
 end
