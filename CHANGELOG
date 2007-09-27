@@ -1,3 +1,7 @@
+[27 September 2007]
+
+* Improve the handling of multiparameter attributes.
+
 [19 September 2007]
 
 * Almost a complete rewrite! API unchanged. Let me know if there are any issues.
