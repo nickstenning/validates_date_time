@@ -34,7 +34,7 @@ Use <tt>:allow_nil</tt> to allow the value to be blank.
 The default for the plugin is to expect dates in day/month/year format. If you are in the
 US, you will want to change the default to month/day/year by placing the following in config/environment.rb
 
-  ActiveRecord::Validations::DateTime.us_date_format = true
+  ValidatesDateTime.us_date_format = true
   
 Date format examples:
  
