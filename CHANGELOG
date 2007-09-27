@@ -1,6 +1,12 @@
+[28 September]
+
+* Preserve ActiveRecord::Validations::DateTime.us_date_format for compatibility.
+
 [27 September 2007]
 
 * Improve the handling of multiparameter attributes.
+
+* BACKWARDS INCOMPATIBLE: Change namespace from ActiveRecord::Validations::DateTime to ValidatesDateTime.
 
 [19 September 2007]
 
