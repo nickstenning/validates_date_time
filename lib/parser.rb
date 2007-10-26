@@ -31,7 +31,7 @@ module ActiveRecord
         def string_to_dummy_time(value)
           return if value.blank?
           return value if value.is_a?(Time) || value.is_a?(DateTime)
-          return value.to_time if value.is_a?(Date)
+          return value.to_time(ActiveRecord::Base.default_timezone) if value.is_a?(Date)
           
           hour, minute, second = case value.strip
             # 12 hours with minute and second
@@ -57,7 +57,7 @@ module ActiveRecord
         def string_to_time(value)
           return if value.blank?
           return value if value.is_a?(Time) || value.is_a?(DateTime)
-          return value.to_time if value.is_a?(Date)
+          return value.to_time(ActiveRecord::Base.default_timezone) if value.is_a?(Date)
           
           value = value.strip
           
