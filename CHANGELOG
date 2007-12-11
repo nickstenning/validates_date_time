@@ -1,4 +1,8 @@
-[28 September]
+[11 December 2007]
+
+* Parse microseconds from time and datetime strings.
+
+[28 September 2007]
 
 * Preserve ActiveRecord::Validations::DateTime.us_date_format for compatibility.
 

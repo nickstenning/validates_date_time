@@ -21,6 +21,11 @@ class DateTimeTest < Test::Unit::TestCase
     end
   end
   
+  def test_date_time_with_microseconds
+    assert_update_and_match /Mar 20 09:22:50 [\+-]?[\w ]+ 2007/, :date_and_time_of_birth => "20 Mar 07 09:22:50.987654"
+    assert_equal 987654, p.date_and_time_of_birth.usec
+  end
+  
   def test_invalid_formats
     ['29 Feb 06 1am', '1 Jan 06', '7pm'].each do |value|
       assert_invalid_and_errors_match /date time/, :date_and_time_of_birth => value
