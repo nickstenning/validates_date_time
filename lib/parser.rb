@@ -33,7 +33,7 @@ module ActiveRecord
           return value if value.is_a?(Time) || value.is_a?(DateTime)
           return value.to_time(ActiveRecord::Base.default_timezone) if value.is_a?(Date)
           
-          hour, minute, second = case value.strip
+          hour, minute, second, microsecond = case value.strip
             # 12 hours with minute and second
             when /\A(\d{1,2})[\. :](\d{2})[\. :](\d{2})\s?(am|pm)\Z/i
               [full_hour($1, $4), $2, $3]
@@ -44,14 +44,14 @@ module ActiveRecord
             when /\A(\d{1,2})\s?(am|pm)\Z/i
               [full_hour($1, $2)]
             # 24 hour: 22:30, 03.10, 12 30
-            when /\A(\d{2})[\. :](\d{2})([\. :](\d{2}))?\Z/
-              [$1, $2, $4]
+            when /\A(\d{2})[\. :](\d{2})([\. :](\d{2})(\.(\d{6}))?)?\Z/
+              [$1, $2, $4, $6]
             # Not a valid time string
             else
               return nil
           end
           
-          Time.send(ActiveRecord::Base.default_timezone, 2000, 1, 1, hour.to_i, minute.to_i, second.to_i) rescue nil
+          Time.send(ActiveRecord::Base.default_timezone, 2000, 1, 1, hour.to_i, minute.to_i, second.to_i, microsecond.to_i) rescue nil
         end
         
         def string_to_time(value)
@@ -77,7 +77,7 @@ module ActiveRecord
           time = string_to_dummy_time(value.last(value.size - split_index))
           return if time.nil?
           
-          time_array = [date.year, date.month, date.day, time.hour, time.min, time.sec]
+          time_array = [date.year, date.month, date.day, time.hour, time.min, time.sec, time.usec]
           
           # From schema_definitions.rb
           begin

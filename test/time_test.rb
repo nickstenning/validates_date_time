@@ -29,6 +29,11 @@ class TimeTest < Test::Unit::TestCase
     end
   end
   
+  def test_24_hour_with_microseconds
+    assert_update_and_match /12:23:56/, :time_of_birth => "12:23:56.169732"
+    assert_equal 169732, p.time_of_birth.usec
+  end
+  
   def test_time_objects
     { Time.gm(2006, 2, 2, 22, 30) => /22:30:00/, '2pm' => /14:00:00/, Time.gm(2006, 2, 2, 1, 3) => /01:03:00/ }.each do |value, result|
       assert_update_and_match result, :time_of_birth => value
