@@ -1,3 +1,7 @@
+[14 December 2007]
+
+* Allow 1 through 6 digits for microseconds.
+
 [11 December 2007]
 
 * Parse microseconds from time and datetime strings.
