@@ -32,6 +32,13 @@ class TimeTest < Test::Unit::TestCase
   def test_24_hour_with_microseconds
     assert_update_and_match /12:23:56/, :time_of_birth => "12:23:56.169732"
     assert_equal 169732, p.time_of_birth.usec
+    
+    assert_update_and_match /12:23:56/, :time_of_birth => "12:23:56.15"
+    assert_equal 15, p.time_of_birth.usec
+  end
+  
+  def test_24_hour_with_invalid_microseconds
+    assert_invalid_and_errors_match /invalid/, :time_of_birth => "12:23:11.1234567"
   end
   
   def test_time_objects

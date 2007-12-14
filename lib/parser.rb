@@ -44,7 +44,7 @@ module ActiveRecord
             when /\A(\d{1,2})\s?(am|pm)\Z/i
               [full_hour($1, $2)]
             # 24 hour: 22:30, 03.10, 12 30
-            when /\A(\d{2})[\. :](\d{2})([\. :](\d{2})(\.(\d{6}))?)?\Z/
+            when /\A(\d{2})[\. :](\d{2})([\. :](\d{2})(\.(\d{1,6}))?)?\Z/
               [$1, $2, $4, $6]
             # Not a valid time string
             else
