@@ -1,3 +1,7 @@
+[7 January 2008]
+
+* Add support for ISO8601 formats.
+
 [14 December 2007]
 
 * Allow 1 through 6 digits for microseconds.
