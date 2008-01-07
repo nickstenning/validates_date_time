@@ -38,7 +38,7 @@ class TimeTest < Test::Unit::TestCase
   end
   
   def test_iso8601
-    assert_update_and_match /12:03:28/, :time_of_birth => "2008-02-23T12:03:28+12:00"
+    assert_update_and_match /12:03:28/, :time_of_birth => "2008-02-23T12:03:28"
   end
   
   def test_24_hour_with_invalid_microseconds

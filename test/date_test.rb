@@ -34,7 +34,7 @@ class DateTest < Test::Unit::TestCase
   
   def test_iso_format
     { '2006-01-01' => '2006-01-01', '1900-04-22' => '1900-04-22',
-      '2008-03-04T20:33:41+13:00' => '2008-03-04' }.each do |value, result|
+      '2008-03-04T20:33:41' => '2008-03-04' }.each do |value, result|
       assert_update_and_equal result, :date_of_birth => value
     end
   end
