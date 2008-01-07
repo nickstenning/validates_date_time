@@ -21,7 +21,7 @@ module ActiveRecord
             when /\A(\d{4})-(\d{2})-(\d{2})\Z/
               [$1, $2, $3]
             # 2006-01-01T10:10:10+13:00
-            when /\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\+(\d{2}):(\d{2})\Z/
+            when /\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\Z/
               [$1, $2, $3]
             # Not a valid date string
             else
@@ -50,7 +50,7 @@ module ActiveRecord
             when /\A(\d{2})[\. :](\d{2})([\. :](\d{2})(\.(\d{1,6}))?)?\Z/
               [$1, $2, $4, $6]
             # 2006-01-01T10:10:10+13:00
-            when /\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\+(\d{2}):(\d{2})\Z/
+            when /\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\Z/
               [$4, $5, $6]
             # Not a valid time string
             else
@@ -67,7 +67,7 @@ module ActiveRecord
           
           value = value.strip
           
-          if value =~ /\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\+(\d{2}):(\d{2})\Z/
+          if value =~ /\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\Z/
             time_array = [$1, $2, $3, $4, $5, $6].map!(&:to_i)
           else
             # The basic approach is to attempt to parse a date from the front of the string, splitting on spaces.
