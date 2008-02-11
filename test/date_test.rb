@@ -57,11 +57,11 @@ class DateTest < Test::Unit::TestCase
   
   def test_before_and_after
     p.update_attributes!(:date_of_death => '1950-01-01')
-    assert_invalid_and_errors_match /before/, :date_of_death => (Date.today + 2).to_s
+    assert_invalid_and_errors_match /before/, :date_of_death => (Date.today + 1).to_s
     assert_invalid_and_errors_match /before/, :date_of_death => Date.new(2030, 1, 1)
     
     p.update_attributes!(:date_of_birth => '1950-01-01', :date_of_death => nil)
-    assert_invalid_and_errors_match /after/, :date_of_death => '1949-01-01'
+    assert_invalid_and_errors_match /after/, :date_of_death => '1950-01-01'
     assert p.update_attributes!(:date_of_death => Date.new(1951, 1, 1))
   end
   
