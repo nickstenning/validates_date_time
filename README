@@ -99,7 +99,7 @@ and predefined values. You can pass as many value to :before or :after as you li
 You can customise the error messages for dates or times that fall outside the required range. The boundary date will be substituted in for %s. Eg:
 
   class Person
-    validates_date :date_of_birth, :after => Date.new(1900, 1, 1), :before => Proc.new { 1.day.from_now.to_date }, :before_message => 'Ensure it is before %s', :after_message => 'Ensure it is before %s'
+    validates_date :date_of_birth, :after => Date.new(1900, 1, 1), :before => Proc.new { 1.day.from_now.to_date }, :before_message => 'Ensure it is before %s', :after_message => 'Ensure it is after %s'
   end
  
 Suggestions, comments, problems are all welcome. You'll find me at jonathan.viney@gmail.com
