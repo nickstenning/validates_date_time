@@ -42,6 +42,7 @@ module ActiveRecord
               [full_hour($1, $4), $2, $3]
             # 12 hour with minute: 7.30pm, 11:20am, 2 20PM
             when /\A(\d{1,2})[\. :](\d{2})\s?(am|pm)\Z/i
+              return nil unless $1.to_i <= 12
               [full_hour($1, $3), $2]
             # 12 hour without minute: 2pm, 11Am, 7 pm
             when /\A(\d{1,2})\s?(am|pm)\Z/i

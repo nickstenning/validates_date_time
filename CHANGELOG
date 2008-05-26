@@ -1,3 +1,7 @@
+[26 May 2008]
+
+* Fix incorrect validation of 24 hour times including meridian, eg: 18:20 AM.
+
 [2 May 2008]
 
 * Permenently remove old ActiveRecord::Validations::DateTime namespace.

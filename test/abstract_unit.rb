@@ -40,7 +40,7 @@ class Test::Unit::TestCase #:nodoc:
   end
   
   def assert_update_and_match(expected, attributes = {})
-    assert p.update_attributes!(attributes), "#{attributes.inspect} should be valid"
+    assert p.update_attributes(attributes), "#{attributes.inspect} should be valid"
     assert_match expected, p.send(attributes.keys.first).to_s
   end
   
