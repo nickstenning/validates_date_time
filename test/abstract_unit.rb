@@ -5,7 +5,7 @@ begin
   Rails::Initializer.run
 rescue LoadError
   require 'rubygems'
-  require_gem 'activerecord'
+  require 'activerecord'
 end
 
 # Search for fixtures first
