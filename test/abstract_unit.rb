@@ -14,7 +14,7 @@ Dependencies.load_paths.insert(0, fixture_path)
 
 require 'active_record/fixtures'
 
-require File.dirname(__FILE__) + '/../lib/validates_date_time'
+require File.expand_path(File.dirname(__FILE__) + '/../lib/validates_date_time')
 
 ActiveRecord::Base.configurations = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
 ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + '/debug.log')
