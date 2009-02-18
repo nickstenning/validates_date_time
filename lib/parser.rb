@@ -7,7 +7,7 @@ module ActiveRecord
           return value if value.is_a?(Date)
           return value.to_date if value.is_a?(Time) || value.is_a?(DateTime)
           
-          year, month, day = case value.strip
+          year, month, day = case value.to_s.strip
             # 22/1/06, 22\1\06 or 22.1.06
             when /\A(\d{1,2})[\\\/\.-](\d{1,2})[\\\/\.-](\d{2}|\d{4})\Z/
               ValidatesDateTime.us_date_format ? [$3, $1, $2] : [$3, $2, $1]
@@ -36,7 +36,7 @@ module ActiveRecord
           return value if value.is_a?(Time) || value.is_a?(DateTime)
           return value.to_time(ActiveRecord::Base.default_timezone) if value.is_a?(Date)
           
-          hour, minute, second, microsecond = case value.strip
+          hour, minute, second, microsecond = case value.to_s.strip
             # 12 hours with minute and second
             when /\A(\d{1,2})[\. :](\d{2})[\. :](\d{2})\s?(am|pm)\Z/i
               [full_hour($1, $4), $2, $3]
@@ -66,7 +66,7 @@ module ActiveRecord
           return value if value.is_a?(Time) || value.is_a?(DateTime)
           return value.to_time(ActiveRecord::Base.default_timezone) if value.is_a?(Date)
           
-          value = value.strip
+          value = value.to_s.strip
           
           if value =~ /\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\Z/
             time_array = [$1, $2, $3, $4, $5, $6].map!(&:to_i)

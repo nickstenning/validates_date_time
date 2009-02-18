@@ -46,7 +46,7 @@ class DateTest < Test::Unit::TestCase
   def test_invalid_formats
     ['aksjhdaksjhd', 'meow', 'chocolate',
      '221 jan 05', '21 JAN 001', '1 Jaw 00', '1 Febrarary 2003', '30/2/06',
-     '1/2/3/4', '11/22/33', '10/10/990', '189 /1 /9', '12\ f m'].each do |value|
+     '1/2/3/4', '11/22/33', '10/10/990', '189 /1 /9', '12\ f m', 100].each do |value|
       assert_invalid_and_errors_match /invalid/,  :date_of_birth => value
     end
   end

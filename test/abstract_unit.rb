@@ -5,6 +5,7 @@ begin
   Rails::Initializer.run
 rescue LoadError
   require 'rubygems'
+  gem 'activerecord', '=2.2.2'
   require 'activerecord'
 end
 

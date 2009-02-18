@@ -52,7 +52,7 @@ class TimeTest < Test::Unit::TestCase
   end
   
   def test_invalid_formats
-    ['1 PPM', 'lunchtime', '8..30', 'chocolate', '29am', '18:20 AM', '18:20 PM'].each do |value|
+    ['1 PPM', 'lunchtime', '8..30', 'chocolate', '29am', '18:20 AM', '18:20 PM', 2].each do |value|
       assert !p.update_attributes(:time_of_birth => value)
     end
     assert_match /time/, p.errors[:time_of_birth]

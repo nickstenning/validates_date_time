@@ -1,3 +1,7 @@
+[18 February 2008]
+
+* Fix errors caused by assigning values that don't respond to #strip.
+
 [26 May 2008]
 
 * Fix incorrect validation of 24 hour times including meridian, eg: 18:20 AM.

@@ -28,7 +28,7 @@ class DateTimeTest < Test::Unit::TestCase
   end
   
   def test_invalid_formats
-    ['29 Feb 06 1am', '1 Jan 06', '7pm'].each do |value|
+    ['29 Feb 06 1am', '1 Jan 06', '7pm', 6].each do |value|
       assert_invalid_and_errors_match /date time/, :date_and_time_of_birth => value
     end
   end
