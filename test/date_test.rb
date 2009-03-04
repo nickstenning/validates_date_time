@@ -69,6 +69,19 @@ class DateTest < Test::Unit::TestCase
     assert_invalid_and_errors_match /avant/, :date_of_arrival => 2.years.from_now, :date_of_departure => 2.years.ago
     assert_invalid_and_errors_match /apres/, :date_of_arrival => '1792-03-03'
   end
+
+  def test_before_and_after_with_i18n
+    original_load_path = I18n.load_path
+    
+    I18n.load_path = [File.join(File.dirname(__FILE__),'fixtures/en.yml')]
+    I18n.reload!
+    
+    assert_invalid_and_errors_match /i18n_before/, :date_of_death => (Date.today + 1).to_s
+    assert_invalid_and_errors_match /i18n_after/, :date_of_birth => (Date.today + 1).to_s
+  ensure
+    I18n.load_path = original_load_path
+    I18n.reload!
+  end
   
   def test_dates_with_unknown_year
     assert p.update_attributes!(:date_of_birth => '9999-12-11')
