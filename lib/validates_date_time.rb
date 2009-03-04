@@ -114,7 +114,7 @@ module ValidatesDateTime
       if options[:before]
         options[:before].each do |r|
           if r.value(record) and value >= r.last_value
-            record.errors.add(attr_name, options[:before_message] % r)
+            record.errors.add(attr_name, :before, :value => r, :default => options[:before_message] % r)
             break
           end
         end
@@ -123,7 +123,7 @@ module ValidatesDateTime
       if options[:after]
         options[:after].each do |r|
           if r.value(record) and value <= r.last_value
-            record.errors.add(attr_name, options[:after_message] % r)
+            record.errors.add(attr_name, :after, :value => r, :default => options[:after_message] % r)
             break
           end
         end

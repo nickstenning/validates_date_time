@@ -1,4 +1,8 @@
-[18 February 2008]
+[5 March 2009]
+
+* Add support for I18N [Roman Shterenzon]
+
+[18 February 2009]
 
 * Fix errors caused by assigning values that don't respond to #strip.
 
