@@ -10,7 +10,7 @@ module ValidatesDateTime
   end
   
   mattr_accessor :us_date_format
-  us_date_format = false
+  self.us_date_format = false
   
   DEFAULT_TEMPORAL_VALIDATION_OPTIONS = {
     :before_message => "must be before %s",
@@ -18,7 +18,7 @@ module ValidatesDateTime
     :on => :save
   }.freeze
   
-  class Restriction < Struct.new(:raw_value, :parse_method)
+  class ValidatesDateTimeRestriction < Struct.new(:raw_value, :parse_method)
     def value(record)
       @last_value = case raw_value
         when Symbol
@@ -131,8 +131,8 @@ module ValidatesDateTime
     end
     
     def prepare_restrictions(options, parse_method)
-      options[:before] = [*options[:before]].compact.map { |r| Restriction.new(r, parse_method) }
-      options[:after] = [*options[:after]].compact.map { |r| Restriction.new(r, parse_method) }
+      options[:before] = [*options[:before]].compact.map { |r| ValidatesDateTimeRestriction.new(r, parse_method) }
+      options[:after] = [*options[:after]].compact.map { |r| ValidatesDateTimeRestriction.new(r, parse_method) }
     end
     
     def temporal_validation_options(options, args)
