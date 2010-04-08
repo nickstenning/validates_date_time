@@ -33,7 +33,8 @@ Gem::Specification.new do |s|
      "test/fixtures/people.yml",
      "test/fixtures/person.rb",
      "test/schema.rb",
-     "test/time_test.rb"
+     "test/time_test.rb",
+     "validates_date_time.gemspec"
   ]
   s.homepage = %q{http://github.com/nickstenning/validates_date_time}
   s.rdoc_options = ["--charset=UTF-8"]
