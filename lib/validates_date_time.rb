@@ -139,7 +139,7 @@ module ValidatesDateTime
       returning options do
         options.reverse_merge!(DEFAULT_TEMPORAL_VALIDATION_OPTIONS)
         options.update(args.pop) if args.last.is_a?(Hash)
-        options.assert_valid_keys :message, :before_message, :after_message, :before, :after, :if, :on, :allow_nil
+        options.assert_valid_keys :message, :before_message, :after_message, :before, :after, :if, :unless, :on, :allow_nil
       end
     end
   end
