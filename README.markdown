@@ -6,7 +6,12 @@ This fork is patched to work with Rails 3.0.
 
 Install
 =======
-    gem "validates_date_time", "~> 1.0.0", :git => "git://github.com/sofatutor/validates_date_time", :branch => 'rails-3'
+
+Put this in your Gemfile:
+
+```ruby
+gem "validates_date_time", :git => "git://github.com/sofatutor/validates_date_time", :branch => 'rails-3'
+```
 
 Instructions
 ============
