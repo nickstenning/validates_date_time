@@ -14,8 +14,7 @@ module ValidatesDateTime
 
   DEFAULT_TEMPORAL_VALIDATION_OPTIONS = {
     :before_message => "must be before %s",
-    :after_message  => "must be after %s",
-    :on => :save
+    :after_message  => "must be after %s"
   }.freeze
 
   class ValidatesDateTimeRestriction < Struct.new(:raw_value, :parse_method)
@@ -114,7 +113,7 @@ module ValidatesDateTime
       if options[:before]
         options[:before].each do |r|
           if r.value(record) and value >= r.last_value
-            record.errors.add(attr_name, :before, :value => r, :default => options[:before_message] % r)
+            record.errors.add(attr_name, :before, :value => r, :message => options[:before_message] % r)
             break
           end
         end
@@ -123,7 +122,7 @@ module ValidatesDateTime
       if options[:after]
         options[:after].each do |r|
           if r.value(record) and value <= r.last_value
-            record.errors.add(attr_name, :after, :value => r, :default => options[:after_message] % r)
+            record.errors.add(attr_name, :after, :value => r, :message => options[:after_message] % r)
             break
           end
         end
