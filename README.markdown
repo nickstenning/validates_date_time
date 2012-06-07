@@ -2,9 +2,16 @@ validates_date_time
 ===================
 This plugin adds the ability to do stricter date and time checking with ActiveRecord.
 
+This fork is patched to work with Rails 3.0.
+
 Install
 =======
-    ./script/plugin install git://github.com/nickstenning/validates_date_time.git
+
+Put this in your Gemfile:
+
+```ruby
+gem "validates_date_time", :git => "git://github.com/sofatutor/validates_date_time", :branch => 'rails-3'
+```
 
 Instructions
 ============

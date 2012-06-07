@@ -1,3 +1,7 @@
+[2012-02-22]
+
+* Add support for Rails 3.0 [Kornelius Kalnbach]
+
 [5 March 2009]
 
 * Add support for I18N [Roman Shterenzon]
