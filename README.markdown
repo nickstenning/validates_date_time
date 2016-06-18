@@ -17,6 +17,7 @@ Instructions
 ============
 The validators can be used to parse strings into Date and Time objects as well as restrict  
 an attribute based on other dates or times.
+
     class Person < ActiveRecord::Base
       validates_date     :date_of_birth
       validates_time     :time_of_birth
@@ -24,6 +25,7 @@ an attribute based on other dates or times.
     end
   
 Use `:allow_nil` to allow the value to be blank.
+
     class Person < ActiveRecord::Base
       validates_date :date_of_birth, :allow_nil => true
     end
@@ -31,7 +33,8 @@ Use `:allow_nil` to allow the value to be blank.
 Supported formats
 =================
 The default for the plugin is to expect dates in day/month/year format. If you are in the
-US, you will want to change the default to month/day/year by placing the following in config/environment.rb
+US, you will want to change the default to month/day/year by placing the following in `config/environment.rb`
+
     ValidatesDateTime.us_date_format = true
   
 Date format examples:
@@ -54,6 +57,7 @@ Datetime format examples:
 Examples
 ========
 If an attribute value can not be parsed correctly, an error is added: 
+
     p = Person.new
     p.date_of_birth = "1 Jan 2006"
     p.time_of_birth = "5am"
@@ -71,7 +75,8 @@ because "java is better than ruby" is an invalid date, but more importantly, bec
 Restricting date and time ranges
 ================================
 Using the `:before` and `:after` options you can restrict a date or time value based on other attribute values  
-and predefined values. You can pass as many value to :before or :after as you like.
+and predefined values. You can pass as many value to `:before` or `:after` as you like.
+
     class Person
       validates_date :date_of_birth, :before => [:date_of_death, Proc.new { 1.day.from_now_to_date}], :after => '1 Jan 1900'
       validates_date :date_of_death, :before => Proc.new { 1.day.from_now.to_date }
@@ -91,6 +96,7 @@ and predefined values. You can pass as many value to :before or :after as you li
     p.save  # true
   
 You can customise the error messages for dates or times that fall outside the required range. The boundary date will be substituted in for %s. Eg:
+
     class Person
       validates_date :date_of_birth, :after => Date.new(1900, 1, 1), :before => Proc.new { 1.day.from_now.to_date }, :before_message => 'Ensure it is before %s', :after_message => 'Ensure it is after %s'
     end
